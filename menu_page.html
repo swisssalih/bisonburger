@@ -1,0 +1,641 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" class="login-pf"><head><meta http-equiv="origin-trial" content="A7vZI3v+Gz7JfuRolKNM4Aff6zaGuT7X0mf3wtoZTnKv6497cVMnhy03KDqX7kBz/q/iidW7srW31oQbBt4VhgoAAACUeyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGUuY29tOjQ0MyIsImZlYXR1cmUiOiJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmczIiwiZXhwaXJ5IjoxNzU3OTgwODAwLCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ==">
+
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+        <meta name="robots" content="noindex, nofollow">
+
+                <meta name="viewport" content="width=device-width,initial-scale=1">
+
+        <title>Sign in to Restaurant Partners</title>
+        <link rel="icon" href="/auth/resources/jctjf/login/restaurant-portal/images/favicon.ico?ts=1762438442">
+        <link rel="preload" href="https://d30v2pzvrfyzpo.cloudfront.net/fonts/JETSansDigital-Regular-optimised.woff2?ts=1762438442" as="font" type="font/woff2" crossorigin="">
+        <link rel="preload" href="https://d30v2pzvrfyzpo.cloudfront.net/fonts/JETSansDigital-Bold-optimised.woff2?ts=1762438442" as="font" type="font/woff2" crossorigin="">
+        <link rel="preload" href="https://d30v2pzvrfyzpo.cloudfront.net/fonts/JETSansDigital-ExtraBold-optimised.woff2?ts=1762438442" as="font" type="font/woff2" crossorigin="">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/fonts.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/reset.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/base.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/form.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/styleguide.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/btn.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/language.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/login.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/notification.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/alert.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/cookie-banner.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/helpers.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/tabs.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/mfa.css?ts=1762438442" rel="stylesheet">
+                <link href="/auth/resources/jctjf/login/restaurant-portal/css/index-mfa.css?ts=1762438442" rel="stylesheet">
+<script type="text/javascript" async="" charset="utf-8" src="https://www.gstatic.com/recaptcha/releases/rL1ELiQAg1kPezz6_H9hTZ_i/recaptcha__tr.js" crossorigin="anonymous" integrity="sha384-OtsN2bT/YkLnisqGelaia4C9J9zaJc/xU1MtXn+hoVmQzrTZvWobT17wcPQlZLH0"></script><script src="//tags.tiqcdn.com/utag/takeaway/restaurantportal/prod/utag.js" type="text/javascript" async=""></script><script type="text/javascript">
+    (function(a,b,c,d){
+        a='//tags.tiqcdn.com/utag/takeaway/restaurantportal/prod/utag.js';
+        b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+        a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+    })();
+
+    function sendEvent(event,eventObject
+    ) {
+        analyticEventManager.triggerEventData(event,eventObject)
+    }
+
+    function AnalyticEventManager() {
+        this.analyticsEventData = {
+            loginButtonClicked: {
+                gaEventCategory: 'Login',
+                gaEventAction: 'Log-in page',
+                gaEventLabel: 'Log-in button'
+            },
+            submitMFAButtonClicked: {
+                gaEventCategory: 'Login',
+                gaEventAction: 'One-time-code page',
+                gaEventLabel: 'Submit'
+            },
+            resendMFAButtonClicked: {
+                gaEventCategory: 'Login',
+                gaEventAction: 'One-time-code page',
+                gaEventLabel: 'Resend button'
+            },
+            resetPasswordButtonClicked: {
+                gaEventCategory: 'Forgot Your Password',
+                gaEventAction: 'Confirm button'
+            },
+            backToLoginButtonClickedOnTheResetPasswordPage: {
+                gaEventCategory: 'Forgot Your Password',
+                gaEventAction: 'Back to login button'
+            },
+            updatePasswordButtonClicked: {
+                gaEventCategory: 'Update Your Password',
+                gaEventAction: 'Confirm button'
+            },
+            backToApplicationButtonClicked: {
+                gaEventCategory: 'Back to Application button'
+            },
+            goNextButtonClicked: {
+                gaEventCategory: 'Next button'
+            },
+            restartLoginProcessButtonClicked: {
+                gaEventCategory: 'Restart login process'
+            },
+            continueLoginProcessButtonClicked: {
+                gaEventCategory: 'Continue login process'
+            },
+            goNextButtonYouAreAlmostThereClicked: {
+                gaEventCategory: 'You are almost there',
+                gaEventAction: 'Next button'
+            },
+            goNextButtonOnUpdateUsernameClicked:{
+                gaEventCategory: 'Create Username',
+                gaEventAction: 'Next button'
+            }
+        };
+
+        this.pageGroup = 'generic';
+        this.isTmsControllerLoaded = false;
+        this.queuedEvents = [];
+    }
+
+    AnalyticEventManager.prototype.setPageGroup = function(pageGroup) {
+        this.pageGroup = pageGroup;
+    }
+
+    AnalyticEventManager.prototype.getPageGroup = function() {
+        return this.pageGroup;
+    }
+
+    AnalyticEventManager.prototype.event = function(eventType) {
+        const eventData = this.analyticsEventData[eventType];
+        if (typeof eventData === 'undefined') {
+            console.error('Invalid event type: "' + eventType + '". Unable to proceed. Metrics might be missing.');
+            return;
+        }
+
+        this.eventWithData(eventData);
+    }
+
+    AnalyticEventManager.prototype.eventWithData = function(eventData) {
+        if (this.isTmsControllerLoaded === false) {
+            console.log('TMS controller is not yet loaded. Putting event in the queue.');
+            this.addEventInQueue(eventData);
+            return;
+        }
+
+        if (typeof tmsController === 'undefined') {
+            console.error('TMS controller is not available. Unable to proceed. Metrics might be missing.');
+            return;
+        }
+
+        console.log('Sending analytic event:');
+        console.log(eventData);
+
+        tmsController.data.eventData.gaEventCategory = eventData.gaEventCategory;
+        tmsController.data.eventData.gaEventAction = typeof eventData.gaEventAction === 'undefined' ? this.getPageGroup() : eventData.gaEventAction;
+        tmsController.data.eventData.gaEventLabel = typeof eventData.gaEventLabel === 'undefined' ? '' : eventData.gaEventLabel.replace(/&amp;#[^;]+;|&#[^;]+;/gm, ' ');
+        tmsController.data.eventData.gaEventNonInteraction = typeof eventData.gaEventNonInteraction === 'undefined' ? false : eventData.gaEventNonInteraction;
+        tmsController.trackEvent('gaEventTrigger');
+    }
+
+    AnalyticEventManager.prototype.triggerEventData = function(event, eventData) {
+        if (this.isTmsControllerLoaded === false) {
+            console.log('TMS controller is not yet loaded. Putting event in the queue.');
+            this.addEventInQueue(eventData);
+            return;
+        }
+
+        if (typeof tmsController === 'undefined') {
+            console.error('TMS controller is not available. Unable to proceed. Metrics might be missing.');
+            return;
+        }
+
+        console.log('Sending analytic for even: ' + event );
+        console.log(eventData);
+
+        tmsController.data.eventData = {
+            component_name : eventData.componentName,
+            component_type : eventData.componentType,
+            component_id : eventData.componentId,
+            form_action : eventData.formAction,
+            error_message : eventData.errorMessage,
+            error_code : eventData.errorCode,
+            account_action : eventData.accountAction,
+            account_authentication: eventData.accountAuthentication,
+            api_conversationId : eventData.apiConversationId,
+            api_name : eventData.apiName,
+            alert_action : eventData.alertAction,
+            alert_type : eventData.alertType
+        }
+        tmsController.trackEvent(event);
+    }
+
+    AnalyticEventManager.prototype.addEventInQueue = function (eventData) {
+        this.queuedEvents.push(eventData);
+    }
+
+    AnalyticEventManager.prototype.pageView = function() {
+        if (typeof tmsController === 'undefined') {
+            console.error('TMS controller is not available.  Unable to proceed. Metrics might be missing.');
+            return;
+        }
+        tmsController.data.pageData = {
+            pageGroup: this.pageGroup,
+            url: document.location.href,
+            language : 'en'
+        };
+        tmsController.data.loginData = {
+            userType: "public"
+        };
+        tmsController.trackPageview();
+    }
+
+    AnalyticEventManager.prototype.sendQueuedEvents = function () {
+        while (this.queuedEvents.length > 0) {
+            this.eventWithData(this.queuedEvents.pop());
+        }
+    }
+
+    AnalyticEventManager.prototype.onTmsControllerLoaded = function () {
+        this.isTmsControllerLoaded = true;
+        this.pageView();
+        this.sendQueuedEvents();
+    }
+
+    const analyticEventManager = new AnalyticEventManager();
+
+    window.addEventListener("tmsControllerLoaded", function () {
+        analyticEventManager.onTmsControllerLoaded();
+    });
+
+    window.addEventListener("load", function() {
+        for(let item of document.getElementsByClassName("track-clicks-in-analytic")) {
+            console.log(item);
+            item.addEventListener("click", function () {
+                analyticEventManager.event(item.dataset.analyticEvent);
+            });
+        }
+    });
+</script>    </head>
+    <body>
+        <script type="text/javascript">
+            function validateEmail(email) {
+              return String(email)
+                .toLowerCase()
+                .match(
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                );
+            }
+
+            function InitializeField(fieldId, fieldType, onFieldInput, options) {
+                this.fieldId = fieldId;
+                this.fieldType = fieldType;
+                this.onFieldInput = onFieldInput;
+                if (options) {
+                    this.options = options;
+                } else {
+                    this.options = {
+                        required: true
+                    };
+                }
+                if (!this.onFieldInput) {
+                    this.onFieldInput = function () {};
+                }
+                this.field = document.getElementById(fieldId);
+                this.input = null;
+                this.rightIcon = this.field.querySelector('.jet-input-right-icon');
+                this.value = null;
+                this.hasError = false;
+                if (this.fieldType === 'text' || this.fieldType === 'password') {
+                    this.input = this.field.querySelector('.jet-form-input-field');
+                    if (this.input) {
+                        var that = this;
+                        this.input.addEventListener('input', function (e) {
+                            that.value = e.target.value;
+                            that.onFieldInput();
+                        });
+                    } else {
+                        console.warn('field not found', field, '.jet-form-input-field');
+                    }
+                } else if (this.fieldType === 'checkbox') {
+                    this.value = false;
+                    this.input = this.field.querySelector('.jet-checkbox-input');
+
+                    console.log(this.input);
+
+                    if (this.input) {
+                        var that = this;
+                        this.field.addEventListener('click', function (e) {
+                            that.value = !that.value;
+                            var f = that.field.querySelector('.jet-checkbox-input');
+                            if (!f) {
+                                return console.warn('.jet-checkbox-input does not exist!');
+                            }
+                            if (that.value) {
+                                f.classList.add('checked');
+                            } else {
+                                f.classList.remove('checked');
+                            }
+                            that.input.setAttribute('value', that.value)
+                            that.input.setAttribute('checked', that.value)
+                            that.onFieldInput();
+                        });
+                    } else {
+                        console.warn('field not found', field, '.jet-checkbox-input');
+                    }
+                }
+
+                if (this.fieldType === 'password' && this.rightIcon) {
+                    var that = this;
+                    this.rightIcon.addEventListener('click', function () {
+                        var inputType = that.input.getAttribute('type');
+                        if (inputType === 'password') {
+                            that.input.setAttribute('type', 'text');
+                        } else {
+                            that.input.setAttribute('type', 'password');
+                        }
+                    });
+                }
+            }
+
+            InitializeField.prototype.isValid = function() {
+              if (!this.options.required) return true;
+              return this.input.value && this.input.value.trim().length;
+            };
+
+            InitializeField.prototype.setError = function() {
+              this.hasError = true;
+              this.field.classList.add('has-error');
+            };
+
+            InitializeField.prototype.removeError = function() {
+              this.hasError = false;
+              this.field.classList.remove('has-error');
+            };
+
+            InitializeField.prototype.touch = function() {
+              var isValid = this.isValid();
+              if (isValid) {
+                this.removeError();
+              } else {
+                this.setError();
+              }
+              return isValid;
+            };
+
+            InitializeField.prototype.clean = function() {
+                this.input.value = "";
+            }
+        </script>
+
+        <div class="app">
+            <div class="main">
+                <div class="main-container">
+                    <div class="nav">
+                        <div class="nav-left">
+                                <img class="logo-wide" src="/auth/resources/jctjf/login/restaurant-portal/images/logo.svg" alt="">
+                        </div>
+                        <div class="nav-center">
+        <img class="logo-small" src="/auth/resources/jctjf/login/restaurant-portal/images/logo-small.svg" alt="">
+                        </div>
+                        <div class="nav-right">
+
+    <div class="language" id="language">
+        <span class="language-item" id="language-item">
+            <span class="language-item-icon">
+                <img src="/auth/resources/jctjf/login/restaurant-portal/images/language-large.svg" alt="">
+            </span>
+        </span>
+
+        <div class="language-side-sheet" id="language-side-sheet">
+            <div class="language-side-sheet-inner" id="language-side-sheet-inner">
+                <div class="language-side-sheet-header">
+                    <h4 class="language-side-sheet-header-heading">Language</h4>
+                    <button name="close-language-side-sheet" type="button" class="close-button" onclick="onToggleLanguageSideSheet()">
+                        <img class="close-icon" src="/auth/resources/jctjf/login/restaurant-portal/images/close.svg" alt="">
+                    </button>
+                </div>
+                <div class="language-side-sheet-divider"></div>
+                <div class="language-items-wrapper">
+                        <div class="language-side-sheet-item" data-language="da">
+                            <a class="language-item" href="/auth/realms/restaurant/login-actions/authenticate?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;kc_locale=da">
+                                    <span class="language-item-label">Dansk</span>
+                            </a>
+                        </div>
+                        <div class="language-side-sheet-item" data-language="nl">
+                            <a class="language-item" href="/auth/realms/restaurant/login-actions/authenticate?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;kc_locale=nl">
+                                    <span class="language-item-label">Dutch (Nederlands)</span>
+                            </a>
+                        </div>
+                        <div class="language-side-sheet-item" data-language="en">
+                            <a class="language-item" href="/auth/realms/restaurant/login-actions/authenticate?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;kc_locale=en">
+                                    <span class="language-item-label-selected">English</span>
+                                    <img src="/auth/resources/jctjf/login/restaurant-portal/images/check-large.svg" alt="" class="language-item-icon-check">
+                            </a>
+                        </div>
+                        <div class="language-side-sheet-item" data-language="fr">
+                            <a class="language-item" href="/auth/realms/restaurant/login-actions/authenticate?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;kc_locale=fr">
+                                    <span class="language-item-label">French (Français)</span>
+                            </a>
+                        </div>
+                        <div class="language-side-sheet-item" data-language="de">
+                            <a class="language-item" href="/auth/realms/restaurant/login-actions/authenticate?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;kc_locale=de">
+                                    <span class="language-item-label">German (Deutsch)</span>
+                            </a>
+                        </div>
+                        <div class="language-side-sheet-item" data-language="it">
+                            <a class="language-item" href="/auth/realms/restaurant/login-actions/authenticate?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;kc_locale=it">
+                                    <span class="language-item-label">Italian (Italiano)</span>
+                            </a>
+                        </div>
+                        <div class="language-side-sheet-item" data-language="pl">
+                            <a class="language-item" href="/auth/realms/restaurant/login-actions/authenticate?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;kc_locale=pl">
+                                    <span class="language-item-label">Polish (Polski)</span>
+                            </a>
+                        </div>
+                        <div class="language-side-sheet-item" data-language="sk">
+                            <a class="language-item" href="/auth/realms/restaurant/login-actions/authenticate?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;kc_locale=sk">
+                                    <span class="language-item-label">sk</span>
+                            </a>
+                        </div>
+                        <div class="language-side-sheet-item" data-language="es">
+                            <a class="language-item" href="/auth/realms/restaurant/login-actions/authenticate?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;kc_locale=es">
+                                    <span class="language-item-label">Spanish (Español)</span>
+                            </a>
+                        </div>
+                        <div class="language-side-sheet-item" data-language="bg">
+                            <a class="language-item" href="/auth/realms/restaurant/login-actions/authenticate?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;kc_locale=bg">
+                                    <span class="language-item-label">Български</span>
+                            </a>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isSideSheetOpen = false;
+        const languageSideSheet = document.getElementById("language-side-sheet-inner");
+        const languageButton = document.getElementById("language-item");
+        const appWrapper = document.getElementsByClassName("app").item(0);
+
+        languageButton.addEventListener('click', onToggleLanguageSideSheet);
+        appWrapper.addEventListener('click', onClickOutsideCloseSideSheet);
+
+        function onClickOutsideCloseSideSheet(event) {
+            const isClickInsideSideSheet = languageSideSheet.contains(event.target);
+            const isClickInsideLanguageButton = languageButton.contains(event.target);
+            if (!isClickInsideSideSheet && !isClickInsideLanguageButton) {
+                closeLanguageSideSheet();
+            }
+        }
+
+        function onToggleLanguageSideSheet() {
+            languageSideSheet.classList.toggle("language-side-sheet-inner--visible");
+            isSideSheetOpen = !isSideSheetOpen;
+        }
+
+        function closeLanguageSideSheet() {
+            if (isSideSheetOpen) {
+                languageSideSheet.classList.remove("language-side-sheet-inner--visible");
+                isSideSheetOpen = false;
+            }
+        }
+
+    </script>
+
+                        </div>
+                    </div>
+        <div class="main-container-inner">
+            <div class="text-box mb-2">
+                <h1>Welcome to Partner Hub</h1>
+            </div>
+            <script>
+                var userNameField = null;
+                var passwordField = null;
+
+                function init() {
+                    userNameField = new InitializeField('username-field', 'text', resetFields);
+                    passwordField = new InitializeField('password-field', 'password', resetFields);
+                }
+
+                function resetFields() {
+                    userNameField.removeError();
+                    passwordField.removeError();
+                }
+
+                function validateForm() {
+                    userNameField.touch();
+                    passwordField.touch();
+                    return userNameField.isValid() && passwordField.isValid()
+                }
+
+                function onSubmit(token) {
+                    analyticEventManager.event("loginButtonClicked");
+                    document.getElementById("kc-login-form").submit();
+                }
+
+                function onSubmitButtonClickWithRecaptcha(e) {
+                    e.preventDefault();
+                    if (validateForm()) {
+                        grecaptcha.execute();
+                    }
+                }
+
+                function onSubmitButtonClickWithoutRecaptcha(e) {
+                    e.preventDefault();
+                    if (validateForm()) {
+                        onSubmit();
+                    }
+                }
+
+                analyticEventManager.setPageGroup('login-keycloak');
+
+
+                window.addEventListener("load", function () {
+                    init();
+                });
+            </script>
+
+            <form id="kc-login-form" class="form" action="https://partner-hub.justeattakeaway.com/auth/realms/restaurant/login-actions/authenticate?session_code=XFdF8O6tyhC0O6huMVwIoSTEjY3ZBV95JzMcXV5Uyog&amp;execution=eb1f4fa0-fa04-4055-8333-4dc1941c5248&amp;client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ" method="post">
+                <div class="form-row mb-2">
+                    <div class="form-col">
+                        <div id="username-field" class="jet-form-control jet-field ">
+                            <div class="jet-form-label">
+                                <label for="username">
+                                    Username
+                                </label>
+                            </div>
+                            <div class="jet-form-input">
+                                <input id="username" type="text" name="username" class="jet-form-input-field" tabindex="1" value="" autofocus="" autocomplete="off">
+                            </div>
+
+                                <div class="jet-form-error">
+                                    <div class="jet-icon jet-icon-alert regular">
+                                        <img src="/auth/resources/jctjf/login/restaurant-portal/images/AlertCircleSmall.svg" alt="">
+                                    </div>
+                                    <p>This field can't be empty.</p>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row mb-2">
+                    <div class="form-col">
+                        <div id="password-field" class="jet-form-control jet-field ">
+                            <div class="jet-form-label">
+                                <label for="password">
+                                    Password
+                                </label>
+                                    <a href="/auth/realms/restaurant/login-actions/reset-credentials?client_id=restaurant-portal&amp;tab_id=v6wOehVUTA8&amp;client_data=eyJydSI6Imh0dHBzOi8vcGFydG5lci1odWIudGFrZWF3YXkuY29tL21lbnUvZWRpdCIsInJ0IjoiY29kZSIsInJtIjoicXVlcnkifQ">
+                                        <strong> Forgot Password? </strong>
+                                    </a>
+                            </div>
+                            <div class="jet-form-input">
+                                <input id="password" type="password" name="password" class="jet-form-input-field" tabindex="2" autofocus="" autocomplete="off">
+                            </div>
+
+                                <div class="jet-form-error">
+                                    <div class="jet-icon jet-icon-alert regular">
+                                        <img src="/auth/resources/jctjf/login/restaurant-portal/images/AlertCircleSmall.svg" alt="">
+                                    </div>
+                                    <p>This field can't be empty.</p>
+                                </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <input type="hidden" id="id-hidden-input" name="credentialId">
+
+                        <input id="rememberMe" name="rememberMe" type="hidden" value="on" checked="">
+
+                            <button name="login" id="kc-login" type="submit" value="Log in" class="jet-button primary width-base regular" onclick="onSubmitButtonClickWithRecaptcha(event)">
+                                <span class="jet-button-text">
+                                    Log in
+                                </span>
+                            </button>
+                    </div>
+                </div>
+                    <div class="g-recaptcha" data-sitekey="6Lc-kZkcAAAAAFHunIfhZWD3Igx02nG0RnqErEdT" data-callback="onSubmit" data-size="invisible"><div class="grecaptcha-badge" data-style="bottomright" style="width: 256px; height: 60px; display: block; transition: right 0.3s; position: fixed; bottom: 14px; right: -186px; box-shadow: gray 0px 0px 5px; border-radius: 2px; overflow: hidden;"><div class="grecaptcha-logo"><iframe title="reCAPTCHA" width="256" height="60" role="presentation" name="a-ax1mfgvcgtan" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6Lc-kZkcAAAAAFHunIfhZWD3Igx02nG0RnqErEdT&amp;co=aHR0cHM6Ly9wYXJ0bmVyLWh1Yi5qdXN0ZWF0dGFrZWF3YXkuY29tOjQ0Mw..&amp;hl=tr&amp;v=rL1ELiQAg1kPezz6_H9hTZ_i&amp;size=invisible&amp;anchor-ms=20000&amp;execute-ms=30000&amp;cb=4q7nifr4c3ns"></iframe></div><div class="grecaptcha-error"></div><textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div><iframe style="display: none;"></iframe></div>
+            </form>
+        </div>
+                </div>
+            </div>
+        </div>
+
+<div id="cookie-banner" class="cookie-banner" style="display: none">
+    <div class="container">
+        <div class="cookie-banner-content">
+            <p>
+                We use cookies and other techniques to improve and personalise your experience and ads together with third parties. <a href="https://restaurant-portal.takeaway.com/cookie-statement?kc_locale=en" target="_blank">Show more</a>
+            </p>
+        </div>
+
+        <div class="cookie-banner-buttons">
+            <button type="button" class="btn primary small" onclick="fullConsent()">OK</button>
+            <button type="button" class="btn secondary ghost small" onclick="essentialConsent()">Essential</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    const config = {
+        "cookie_consent_name": "cookieConsent",
+        "cookie_consent_expiration_in_days": 90,
+        "cookie_consent_full": "full",
+        "cookie_consent_essential": "functional",
+    }
+
+    function fullConsent() {
+        chooseCookie(config.cookie_consent_full);
+    }
+    
+    function essentialConsent() {
+        chooseCookie(config.cookie_consent_essential);
+    }
+
+    function chooseCookie(cookieValue){
+        setIsCookieConsentVisible(false);
+        setCookie(config.cookie_consent_name, cookieValue);
+    }
+
+    function setCookie(cookieName, cookieValue){
+        Cookies.set(cookieName, cookieValue, { expires: config.cookie_consent_expiration_in_days, secure: true });
+        setTmsControllerCookieConsent(cookieValue);
+    }
+
+    function setTmsControllerCookieConsent(cookieValue) {
+        tmsController.data.loginData.cookieConsent = cookieValue;
+    }
+
+    function setIsCookieConsentVisible(visible){
+        document.getElementById("cookie-banner").style.display = visible ? 'block' : 'none';
+    }
+
+    function initCookieConsent() {
+        const cookieValue = Cookies.get(config.cookie_consent_name);
+        if (cookieValue === undefined) {
+            setIsCookieConsentVisible(true);
+            return
+        }
+        setTmsControllerCookieConsent(cookieValue);
+        setIsCookieConsentVisible(false);
+    };
+
+    window.addEventListener("tmsControllerLoaded", function () {
+        initCookieConsent();
+    });
+</script>
+
+        <span class="loader" style="display: none;"><span class="progress"></span></span>
+
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#fff">
+        <meta name="application-name" content="restaurant-portal">
+
+    
+            <script src="https://www.google.com/recaptcha/api.js?hl=en?ts=1762438442" type="text/javascript"></script>
+            <script src="/auth/resources/jctjf/login/restaurant-portal/js/js.cookie.min.js?ts=1762438442" type="text/javascript"></script>
+            <script src="/auth/resources/jctjf/login/restaurant-portal/js/js.js?ts=1762438442" type="text/javascript"></script>
+            <script src="/auth/resources/jctjf/login/restaurant-portal/js/index-mfa.js?ts=1762438442" type="text/javascript"></script>
+    
+</body></html>
