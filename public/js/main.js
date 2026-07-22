@@ -485,12 +485,14 @@ async function submitCheckout(event) {
   showCartMessage('');
 
   try {
+    const location = typeof window.getCheckoutLocation === 'function' ? window.getCheckoutLocation() : null;
     const res = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         customer: { name, phone, address, notes },
-        items: cart
+        items: cart,
+        location
       })
     });
 
@@ -501,6 +503,7 @@ async function submitCheckout(event) {
     updateCartCount();
     loadCart();
     checkoutForm.reset();
+    if (typeof window.resetCheckoutLocation === 'function') window.resetCheckoutLocation();
     showCartMessage(t('orderPlaced', { orderId: order.id }));
   } catch (err) {
     console.error(err);

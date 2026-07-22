@@ -1,4 +1,4 @@
 node_modules/
-data/orders.json
-data/contact-messages.json
+data/bisonburger.db
+data/bisonburger.db-*
 .env

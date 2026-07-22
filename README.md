@@ -1,80 +1,87 @@
 # Bison Burger
 
 Marketing site + ordering flow for Bison Burger (Switzerland). Single-page
-site with EN/DE language toggle, a cart, a delivery checkout form, an
-About/Contact section, and a footer.
+site with EN/DE language toggle, a cart, a delivery checkout form (with a
+live address map), an About/Contact section, and a footer.
 
 This branch (`feature/nodejs-express-revamp`) moves the project from a
 static HTML file opened directly in a browser to a small Node.js/Express
-app, without changing the core visual design — aside from a deliberate
-follow-up tweak (see "Hybrid theme" below) and the new About/Contact/
-footer sections.
+app backed by SQLite, with a from-scratch light/warm redesign (see
+"Design" below).
 
 ## What changed
 
 - **Node.js + Express backend** (`server.js`) serves the site and exposes:
   - `GET /api/menu` — reads `data/menu.json` and returns the full menu.
   - `POST /api/orders` — validates a checkout payload, computes the total
-    server-side, and appends the order to `data/orders.json`.
+    server-side, upserts the customer and stores the order in SQLite.
   - `GET /api/orders` — lists placed orders. **Requires admin auth.**
-  - `POST /api/contact` — validates and stores a contact form submission
-    in `data/contact-messages.json`.
-  - `GET /api/contact-messages` — lists contact submissions. **Requires
-    admin auth.**
+  - `GET /api/orders/stream` — Server-Sent Events feed that pushes a
+    `new-order` event the instant an order comes in. **Requires admin
+    auth.**
+  - `GET /api/geocode?address=...` — proxies OpenStreetMap Nominatim so
+    the checkout map can show where an address actually is.
+  - `POST /api/contact` / `GET /api/contact-messages` — same pattern for
+    the contact form (the GET requires admin auth).
+- **Real database.** `db.js` uses Node's built-in `node:sqlite` module
+  (no native build step, no extra dependency) against
+  `data/bisonburger.db`, with `customers` and `orders` tables (customers
+  are upserted by phone number, so repeat orders update the same row) and
+  a `contact_messages` table. Replaces the earlier JSON-file storage.
+- **Live order notifications.** Placing an order broadcasts over SSE to
+  anyone with `/admin` open — the new order appears instantly, the row
+  flashes, the browser tab title changes, and a short beep plays (Web
+  Audio, no audio file needed). No external notification service
+  required; the tradeoff is that `/admin` needs to be open on some
+  screen for the "instant" part — orders themselves are always saved
+  regardless.
+- **Address map on checkout.** Typing a delivery address (debounced)
+  geocodes it via `/api/geocode` and drops a pin on a Leaflet/OpenStreetMap
+  map right in the cart modal, so the customer can visually confirm it
+  before ordering. The resolved lat/lon is stored with the order, and the
+  admin page links straight to it on OpenStreetMap.
 - **Menu is now data-driven.** `data/menu.json` is the single source of
-  truth for every burger, snack and drink. `public/js/menu.js` fetches
-  `/api/menu` and renders the exact same card/category markup the site
-  used to have hardcoded. Previously `menu.json` was an empty stub and the
-  "ONLINE MENU" section rendered nothing — that section has been merged
-  into "OUR MENU" instead of sitting there duplicated and empty.
-- **Checkout is now real.** Placing an order posts to `/api/orders` and
-  shows the order number that comes back from the server, instead of just
-  clearing `localStorage` and pretending.
-- **Snacks & Drinks are orderable.** Those cards had no "Order Now" button
-  before (`public/js/menu.js` now renders one, reusing the existing
-  `.card a` button style — same look as the burger cards).
-- **About, Contact and a footer were added.** The nav already linked to
-  `#about` and `#contact` but those sections didn't exist — the links
-  went nowhere. Contact includes a working form (posts to `/api/contact`).
-  Both sections and the footer are fully translated (EN/DE).
-- **A minimal admin page** at `/admin` (also behind admin auth) lists
-  placed orders and contact messages in a simple table — see "Admin
-  access" below.
-- **Code split out of the single HTML file** for maintainability:
+  truth for every burger, snack and drink; `public/js/menu.js` fetches
+  `/api/menu` and renders it.
+- **Snacks & Drinks are orderable**, and **About/Contact/footer** sections
+  exist now (the nav used to link to `#about`/`#contact` with nothing
+  there) — both fully translated EN/DE, Contact has a working form.
+- **Code split out of the single HTML file:**
   - `public/css/style.css` — all styles.
   - `public/js/main.js` — language switching, account/login (still
     client-side/localStorage — see Known limitations), cart, checkout,
     contact form.
   - `public/js/menu.js` — fetches and renders the menu.
-- Small UX additions that don't touch the visual design language: a
-  loading state while the menu fetches, a disabled/"Placing order…" state
-  on the checkout and contact buttons while a request is in flight, and a
-  subtle fade-in on menu cards as they render.
+  - `public/js/map.js` — checkout address geocoding + Leaflet map.
 
-### Hybrid theme
+### Design
 
-The header and hero keep the original dark, moody look. The content
-sections (menu, snacks, drinks, about, contact) were switched to a warm
-off-white background with dark text — the all-dark version made the menu
-hard to read. The footer stays dark to bookend the page like the header.
+Full visual redesign — the previous dark/hybrid look is gone. Warm ivory
+background, deep-charcoal ink text, a single red-orange accent, soft
+shadows and generous rounding throughout. The hero keeps a photo
+background (with a warm gradient overlay, not flat black) since that
+contrast is expected for a food hero; the footer is a dark charcoal band
+to bookend the page. Everything in between — menu, about, contact,
+modals — is light.
 
 ## Project structure
 
 ```
-server.js             Express server + API routes
+server.js              Express server + API routes
+db.js                   SQLite schema + data access (node:sqlite)
 package.json
-.env.example           Copy to .env to set PORT / admin credentials
+.env.example            Copy to .env to set PORT / admin credentials
 data/
-  menu.json             Menu content (source of truth for /api/menu)
-  orders.json           Orders placed through checkout (gitignored, created at runtime)
-  contact-messages.json Contact form submissions (gitignored, created at runtime)
+  menu.json              Menu content (source of truth for /api/menu)
+  bisonburger.db          SQLite database (gitignored, created at runtime)
 views/
-  admin.html            Simple orders/messages viewer, served at /admin (auth-protected)
-public/                Everything served to the browser
+  admin.html              Live orders/messages viewer, served at /admin (auth-protected)
+public/                 Everything served to the browser
   index.html
   css/style.css
-  js/main.js            Language/account/cart/checkout/contact logic
-  js/menu.js            Fetches /api/menu and renders menu cards
+  js/main.js              Language/account/cart/checkout/contact logic
+  js/menu.js              Fetches /api/menu and renders menu cards
+  js/map.js               Checkout address geocoding + Leaflet map
   images/
 ```
 
@@ -86,6 +93,9 @@ longer needed for that purpose.
 
 ## Running it
 
+Requires **Node.js 22.5+** (uses the built-in `node:sqlite` module —
+tested on Node 24).
+
 ```bash
 npm install
 cp .env.example .env    # then edit ADMIN_USER / ADMIN_PASSWORD
@@ -96,12 +106,15 @@ npm start                # http://localhost:3000
 
 ## Admin access
 
-`GET /api/orders`, `GET /api/contact-messages` and `/admin` are protected
-with HTTP Basic Auth, credentials from `ADMIN_USER` / `ADMIN_PASSWORD` env
-vars (defaults to `admin` / `changeme` if unset — **the server logs a
-warning on startup if you're still using the default password**). Visit
-`http://localhost:3000/admin` and log in with those credentials to see
-placed orders and contact messages.
+`GET /api/orders`, `GET /api/orders/stream`, `GET /api/contact-messages`
+and `/admin` are protected with HTTP Basic Auth, credentials from
+`ADMIN_USER` / `ADMIN_PASSWORD` env vars (defaults to `admin` / `changeme`
+if unset — **the server logs a warning on startup if you're still using
+the default password**).
+
+Visit `http://localhost:3000/admin`, log in, and leave the tab open on a
+till/tablet/laptop in the kitchen — new orders will pop in live with a
+sound, no polling or refreshing needed.
 
 ## Known limitations / good next steps
 
@@ -111,9 +124,15 @@ placed orders and contact messages.
   (hashed passwords, sessions) before going live.
 - **Admin auth is Basic Auth over HTTP.** Fine for localhost/testing;
   put this behind HTTPS before exposing it anywhere public.
-- **Orders and messages live in JSON files**, not a database — fine for
-  low volume, but will need a real datastore (SQLite/Postgres) if volume
-  grows.
+- **Order notification depends on `/admin` being open.** If nobody has it
+  open, the order still saves to the database, but nobody gets pinged. If
+  that turns out to be a problem in practice, adding a Telegram bot or
+  email fallback on top of `broadcastNewOrder()` in `server.js` is a small
+  addition.
+- **Nominatim (the free geocoder) has a soft rate limit** (~1 req/sec) and
+  asks for a descriptive `User-Agent`, which `/api/geocode` already sets.
+  Fine at this traffic level; if that ever becomes a bottleneck, swap in
+  a paid geocoder behind the same endpoint.
 - **No payment integration** — checkout only collects delivery details,
   assumes pay-on-delivery.
 - **No automated tests yet.**

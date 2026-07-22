@@ -6,28 +6,39 @@
 <title>Bison Burger | Admin</title>
 <style>
   *{ margin:0; padding:0; box-sizing:border-box; }
-  body{ font-family:'Segoe UI',Arial,sans-serif; background:#0d0d0d; color:#eee; padding:40px 6%; }
-  h1{ color:#d60000; margin-bottom:8px; }
-  h2{ margin:40px 0 16px; color:#fff; font-size:20px; }
-  table{ width:100%; border-collapse:collapse; background:#141414; border-radius:10px; overflow:hidden; }
-  th, td{ text-align:left; padding:12px 14px; border-bottom:1px solid #262626; font-size:14px; }
-  th{ background:#1c1c1c; color:#bbb; text-transform:uppercase; letter-spacing:.5px; font-size:12px; }
+  body{ font-family:'Segoe UI',Arial,sans-serif; background:#12100e; color:#eee; padding:40px 6%; }
+  h1{ color:#e0401f; margin-bottom:4px; }
+  .subtitle{ color:#8a8079; margin-bottom:24px; font-size:14px; }
+  .status{ display:inline-flex; align-items:center; gap:8px; font-size:13px; color:#8a8079; margin-left:16px; }
+  .dot{ width:8px; height:8px; border-radius:50%; background:#555; }
+  .dot.live{ background:#1f9d55; box-shadow:0 0 8px #1f9d55; }
+  h2{ margin:40px 0 16px; color:#fff; font-size:20px; display:flex; align-items:center; gap:10px; }
+  .count{ background:#e0401f; color:#fff; font-size:12px; padding:2px 9px; border-radius:20px; }
+  table{ width:100%; border-collapse:collapse; background:#1b1815; border-radius:14px; overflow:hidden; }
+  th, td{ text-align:left; padding:12px 14px; border-bottom:1px solid #2a2620; font-size:14px; vertical-align:top; }
+  th{ background:#211d19; color:#a89e93; text-transform:uppercase; letter-spacing:.5px; font-size:12px; }
   tr:last-child td{ border-bottom:none; }
-  .empty{ color:#777; padding:20px 0; }
-  .total{ color:#00d604; font-weight:bold; }
-  .refresh{ background:#d60000; color:#fff; border:none; padding:10px 18px; border-radius:30px; cursor:pointer; font-weight:600; }
+  tr.new-row{ animation:flash 2s ease; }
+  @keyframes flash{ from{ background:rgba(224,64,31,.35); } to{ background:transparent; } }
+  .empty{ color:#8a8079; padding:20px 0; }
+  .total{ color:#3fd67a; font-weight:bold; }
+  .map-link{ color:#e0401f; font-size:13px; }
+  .refresh{ background:#e0401f; color:#fff; border:none; padding:10px 18px; border-radius:30px; cursor:pointer; font-weight:600; }
   .refresh:hover{ background:#fff; color:#000; }
 </style>
 </head>
 <body>
 
 <h1>Bison Burger — Admin</h1>
-<button class="refresh" id="refresh">Refresh</button>
+<p class="subtitle">
+  <button class="refresh" id="refresh">Refresh</button>
+  <span class="status"><span class="dot" id="live-dot"></span><span id="live-label">Connecting…</span></span>
+</p>
 
-<h2>Orders</h2>
+<h2>Orders <span class="count" id="orders-count">0</span></h2>
 <div id="orders"></div>
 
-<h2>Contact Messages</h2>
+<h2>Contact Messages <span class="count" id="messages-count">0</span></h2>
 <div id="messages"></div>
 
 <script>
@@ -35,24 +46,32 @@ function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-async function loadOrders() {
+function renderOrders(orders, highlightId) {
   const container = document.getElementById('orders');
-  const res = await fetch('/api/orders');
-  const orders = await res.json();
+  document.getElementById('orders-count').textContent = orders.length;
+
   if (orders.length === 0) {
     container.innerHTML = '<p class="empty">No orders yet.</p>';
     return;
   }
-  const rows = orders.slice().reverse().map(order => `
-    <tr>
+
+  const rows = orders.map(order => {
+    const mapLink = order.location
+      ? `<a class="map-link" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${order.location.lat}&mlon=${order.location.lon}#map=17/${order.location.lat}/${order.location.lon}">View on map</a>`
+      : '<span style="color:#5a5550">Not located</span>';
+
+    return `
+    <tr class="${order.id === highlightId ? 'new-row' : ''}">
       <td>${escapeHtml(order.id)}</td>
       <td>${new Date(order.createdAt).toLocaleString()}</td>
       <td>${escapeHtml(order.customer.name)}<br><small>${escapeHtml(order.customer.phone)}</small></td>
-      <td>${escapeHtml(order.customer.address)}${order.customer.notes ? '<br><small>' + escapeHtml(order.customer.notes) + '</small>' : ''}</td>
+      <td>${escapeHtml(order.customer.address)}${order.customer.notes ? '<br><small>' + escapeHtml(order.customer.notes) + '</small>' : ''}<br>${mapLink}</td>
       <td>${order.items.map(i => `${i.quantity}× ${escapeHtml(i.name)}`).join('<br>')}</td>
       <td class="total">${order.total.toFixed(2)} CHF</td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
+
   container.innerHTML = `
     <table>
       <thead><tr><th>ID</th><th>Date</th><th>Customer</th><th>Address</th><th>Items</th><th>Total</th></tr></thead>
@@ -61,21 +80,23 @@ async function loadOrders() {
   `;
 }
 
-async function loadMessages() {
+function renderMessages(messages) {
   const container = document.getElementById('messages');
-  const res = await fetch('/api/contact-messages');
-  const messages = await res.json();
+  document.getElementById('messages-count').textContent = messages.length;
+
   if (messages.length === 0) {
     container.innerHTML = '<p class="empty">No messages yet.</p>';
     return;
   }
-  const rows = messages.slice().reverse().map(msg => `
+
+  const rows = messages.map(msg => `
     <tr>
       <td>${new Date(msg.createdAt).toLocaleString()}</td>
       <td>${escapeHtml(msg.name)}<br><small>${escapeHtml(msg.email)}</small></td>
       <td>${escapeHtml(msg.message)}</td>
     </tr>
   `).join('');
+
   container.innerHTML = `
     <table>
       <thead><tr><th>Date</th><th>From</th><th>Message</th></tr></thead>
@@ -84,13 +105,60 @@ async function loadMessages() {
   `;
 }
 
-function loadAll() {
-  loadOrders();
-  loadMessages();
+async function loadAll(highlightId) {
+  const [ordersRes, messagesRes] = await Promise.all([
+    fetch('/api/orders'),
+    fetch('/api/contact-messages')
+  ]);
+  renderOrders(await ordersRes.json(), highlightId);
+  renderMessages(await messagesRes.json());
 }
 
-document.getElementById('refresh').addEventListener('click', loadAll);
+function playPing() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.6);
+  } catch (err) {
+    console.error('Could not play notification sound', err);
+  }
+}
+
+function connectLiveFeed() {
+  const dot = document.getElementById('live-dot');
+  const label = document.getElementById('live-label');
+  const source = new EventSource('/api/orders/stream');
+
+  source.onopen = () => {
+    dot.classList.add('live');
+    label.textContent = 'Live';
+  };
+
+  source.onerror = () => {
+    dot.classList.remove('live');
+    label.textContent = 'Reconnecting…';
+  };
+
+  source.addEventListener('new-order', event => {
+    const order = JSON.parse(event.data);
+    playPing();
+    document.title = '🔔 New order — Bison Burger Admin';
+    loadAll(order.id);
+    setTimeout(() => { document.title = 'Bison Burger | Admin'; }, 5000);
+  });
+}
+
+document.getElementById('refresh').addEventListener('click', () => loadAll());
 loadAll();
+connectLiveFeed();
 </script>
 
 </body>

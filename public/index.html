@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link rel="stylesheet" href="css/style.css">
 
 </head>
@@ -252,6 +253,8 @@ CONTACT
       <input type="tel" id="delivery-phone" placeholder="+41 79 123 45 67" required>
       <label for="delivery-address">Delivery Address</label>
       <textarea id="delivery-address" placeholder="Street, house number, city" required></textarea>
+      <div id="address-map" class="address-map"></div>
+      <p class="address-map-status" id="address-map-status"></p>
       <label for="delivery-notes">Notes</label>
       <textarea id="delivery-notes" placeholder="Leave at door, ring bell, etc."></textarea>
       <button type="submit">Place Order</button>
@@ -293,6 +296,8 @@ CONTACT
 
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="js/map.js"></script>
 <script src="js/main.js"></script>
 <script src="js/menu.js"></script>
 

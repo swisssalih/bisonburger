@@ -4,15 +4,15 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs/promises');
 const crypto = require('crypto');
+const store = require('./db');
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'changeme';
 
 const MENU_PATH = path.join(__dirname, 'data', 'menu.json');
-const ORDERS_PATH = path.join(__dirname, 'data', 'orders.json');
-const CONTACT_PATH = path.join(__dirname, 'data', 'contact-messages.json');
 const ADMIN_PAGE_PATH = path.join(__dirname, 'views', 'admin.html');
+const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 
 const app = express();
 app.use(express.json());
@@ -50,6 +50,28 @@ function requireAdmin(req, res, next) {
   res.status(401).send('Authentication required.');
 }
 
+// --- Live order notifications (Server-Sent Events) ---
+const sseClients = new Set();
+
+function broadcastNewOrder(order) {
+  const payload = `event: new-order\ndata: ${JSON.stringify(order)}\n\n`;
+  for (const client of sseClients) client.write(payload);
+}
+
+app.get('/api/orders/stream', requireAdmin, (req, res) => {
+  res.set({
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive'
+  });
+  res.flushHeaders();
+  res.write(': connected\n\n');
+
+  sseClients.add(res);
+  req.on('close', () => sseClients.delete(res));
+});
+
+// --- Menu ---
 app.get('/api/menu', async (req, res, next) => {
   try {
     const menu = await readJson(MENU_PATH, { categories: [] });
@@ -59,18 +81,49 @@ app.get('/api/menu', async (req, res, next) => {
   }
 });
 
-app.get('/api/orders', requireAdmin, async (req, res, next) => {
+// --- Geocoding proxy (OpenStreetMap Nominatim) ---
+app.get('/api/geocode', async (req, res, next) => {
   try {
-    const orders = await readJson(ORDERS_PATH, []);
-    res.json(orders);
+    const address = (req.query.address || '').toString().trim();
+    if (!address) {
+      return res.status(400).json({ error: 'Missing address.' });
+    }
+
+    const url = new URL(NOMINATIM_URL);
+    url.searchParams.set('q', address);
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('limit', '1');
+
+    const upstream = await fetch(url, {
+      headers: { 'User-Agent': 'BisonBurgerSite/1.0 (checkout address preview)' }
+    });
+
+    if (!upstream.ok) throw new Error(`geocoding service responded ${upstream.status}`);
+    const results = await upstream.json();
+
+    if (!results.length) {
+      return res.status(404).json({ error: 'Address not found.' });
+    }
+
+    const { lat, lon, display_name } = results[0];
+    res.json({ lat: Number(lat), lon: Number(lon), displayName: display_name });
   } catch (err) {
     next(err);
   }
 });
 
-app.post('/api/orders', async (req, res, next) => {
+// --- Orders ---
+app.get('/api/orders', requireAdmin, (req, res, next) => {
   try {
-    const { customer, items } = req.body || {};
+    res.json(store.listOrders());
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/orders', (req, res, next) => {
+  try {
+    const { customer, items, location } = req.body || {};
 
     if (!customer || !customer.name || !customer.phone || !customer.address) {
       return res.status(400).json({ error: 'Missing delivery details.' });
@@ -84,18 +137,30 @@ app.post('/api/orders', async (req, res, next) => {
       }
     }
 
-    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const order = {
-      id: Date.now().toString(36).toUpperCase(),
-      createdAt: new Date().toISOString(),
-      customer,
-      items,
-      total: Math.round(total * 100) / 100
-    };
+    const total = Math.round(items.reduce((sum, item) => sum + item.price * item.quantity, 0) * 100) / 100;
+    const id = Date.now().toString(36).toUpperCase();
+    const customerId = store.upsertCustomer({
+      name: customer.name,
+      phone: customer.phone,
+      address: customer.address
+    });
 
-    const orders = await readJson(ORDERS_PATH, []);
-    orders.push(order);
-    await fs.writeFile(ORDERS_PATH, JSON.stringify(orders, null, 2));
+    const lat = location && typeof location.lat === 'number' ? location.lat : null;
+    const lon = location && typeof location.lon === 'number' ? location.lon : null;
+
+    const createdAt = store.insertOrder({
+      id,
+      customerId,
+      address: customer.address,
+      notes: customer.notes,
+      lat,
+      lon,
+      items,
+      total
+    });
+
+    const order = { id, createdAt, customer, items, total, location: lat != null ? { lat, lon } : null };
+    broadcastNewOrder(order);
 
     res.status(201).json(order);
   } catch (err) {
@@ -103,16 +168,16 @@ app.post('/api/orders', async (req, res, next) => {
   }
 });
 
-app.get('/api/contact-messages', requireAdmin, async (req, res, next) => {
+// --- Contact ---
+app.get('/api/contact-messages', requireAdmin, (req, res, next) => {
   try {
-    const messages = await readJson(CONTACT_PATH, []);
-    res.json(messages);
+    res.json(store.listContactMessages());
   } catch (err) {
     next(err);
   }
 });
 
-app.post('/api/contact', async (req, res, next) => {
+app.post('/api/contact', (req, res, next) => {
   try {
     const { name, email, message } = req.body || {};
 
@@ -120,24 +185,16 @@ app.post('/api/contact', async (req, res, next) => {
       return res.status(400).json({ error: 'Please fill in all fields.' });
     }
 
-    const entry = {
-      id: Date.now().toString(36).toUpperCase(),
-      createdAt: new Date().toISOString(),
-      name,
-      email,
-      message
-    };
+    const id = Date.now().toString(36).toUpperCase();
+    const createdAt = store.insertContactMessage({ id, name, email, message });
 
-    const messages = await readJson(CONTACT_PATH, []);
-    messages.push(entry);
-    await fs.writeFile(CONTACT_PATH, JSON.stringify(messages, null, 2));
-
-    res.status(201).json(entry);
+    res.status(201).json({ id, createdAt, name, email, message });
   } catch (err) {
     next(err);
   }
 });
 
+// --- Admin page ---
 app.get('/admin', requireAdmin, (req, res) => {
   res.sendFile(ADMIN_PAGE_PATH);
 });
