@@ -46,6 +46,18 @@ db.exec(`
 
 const ORDER_STATUSES = ['new', 'preparing', 'sent', 'delivered'];
 
+// Bahnhofstrasse 12, 8001 Zürich (the address shown in the Contact section)
+const RESTAURANT_LOCATION = { lat: 47.3682932, lon: 8.5400775 };
+
+function distanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2
+    + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 10) / 10;
+}
+
 function upsertCustomer({ name, phone, address }) {
   const now = new Date().toISOString();
   const existing = db.prepare('SELECT id FROM customers WHERE phone = ?').get(phone);
@@ -87,7 +99,10 @@ function listOrders() {
     total: row.total,
     items: JSON.parse(row.items),
     customer: { name: row.customer_name, phone: row.customer_phone, address: row.address, notes: row.notes },
-    location: row.lat != null && row.lon != null ? { lat: row.lat, lon: row.lon } : null
+    location: row.lat != null && row.lon != null ? { lat: row.lat, lon: row.lon } : null,
+    distanceKm: row.lat != null && row.lon != null
+      ? distanceKm(RESTAURANT_LOCATION.lat, RESTAURANT_LOCATION.lon, row.lat, row.lon)
+      : null
   }));
 }
 

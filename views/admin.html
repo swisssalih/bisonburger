@@ -6,29 +6,46 @@
 <title>Bison Burger | Admin</title>
 <style>
   *{ margin:0; padding:0; box-sizing:border-box; }
-  body{ font-family:'Segoe UI',Arial,sans-serif; background:#12100e; color:#eee; padding:40px 6%; }
+  body{ font-family:'Segoe UI',Arial,sans-serif; background:#faf6f0; color:#241f1c; padding:40px 6%; }
   h1{ color:#e0401f; margin-bottom:4px; }
-  .subtitle{ color:#8a8079; margin-bottom:24px; font-size:14px; }
-  .status{ display:inline-flex; align-items:center; gap:8px; font-size:13px; color:#8a8079; margin-left:16px; }
-  .dot{ width:8px; height:8px; border-radius:50%; background:#555; }
-  .dot.live{ background:#1f9d55; box-shadow:0 0 8px #1f9d55; }
-  h2{ margin:40px 0 16px; color:#fff; font-size:20px; display:flex; align-items:center; gap:10px; }
+  .subtitle{ color:#6b6259; margin-bottom:24px; font-size:14px; }
+  .status{ display:inline-flex; align-items:center; gap:8px; font-size:13px; color:#6b6259; margin-left:16px; }
+  .dot{ width:8px; height:8px; border-radius:50%; background:#ccc2b4; }
+  .dot.live{ background:#1f9d55; box-shadow:0 0 8px rgba(31,157,85,.5); }
+  h2{ margin:40px 0 16px; color:#241f1c; font-size:20px; display:flex; align-items:center; gap:10px; }
   .count{ background:#e0401f; color:#fff; font-size:12px; padding:2px 9px; border-radius:20px; }
-  table{ width:100%; border-collapse:collapse; background:#1b1815; border-radius:14px; overflow:hidden; }
-  th, td{ text-align:left; padding:12px 14px; border-bottom:1px solid #2a2620; font-size:14px; vertical-align:top; }
-  th{ background:#211d19; color:#a89e93; text-transform:uppercase; letter-spacing:.5px; font-size:12px; }
+  table{ width:100%; border-collapse:collapse; background:#ffffff; border-radius:14px; overflow:hidden; box-shadow:0 4px 20px rgba(36,31,28,.06); }
+  th, td{ text-align:left; padding:12px 14px; border-bottom:1px solid #ece3d6; font-size:14px; vertical-align:top; }
+  th{ background:#f5efe6; color:#6b6259; text-transform:uppercase; letter-spacing:.5px; font-size:12px; }
   tr:last-child td{ border-bottom:none; }
   tr.new-row{ animation:flash 2s ease; }
-  @keyframes flash{ from{ background:rgba(224,64,31,.35); } to{ background:transparent; } }
-  .empty{ color:#8a8079; padding:20px 0; }
-  .total{ color:#3fd67a; font-weight:bold; }
+  @keyframes flash{ from{ background:rgba(224,64,31,.18); } to{ background:transparent; } }
+  .empty{ color:#9a9086; padding:20px 0; }
+  .total{ color:#1f9d55; font-weight:bold; }
   .map-link{ color:#e0401f; font-size:13px; }
   .refresh{ background:#e0401f; color:#fff; border:none; padding:10px 18px; border-radius:30px; cursor:pointer; font-weight:600; }
-  .refresh:hover{ background:#fff; color:#000; }
+  .refresh:hover{ background:#241f1c; color:#fff; }
   .status-buttons{ display:flex; flex-direction:column; gap:6px; min-width:130px; }
-  .status-btn{ background:#241f1c; border:1px solid #332c26; color:#a89e93; padding:6px 12px; border-radius:20px; font-size:12px; cursor:pointer; text-align:left; transition:.2s; }
-  .status-btn:hover{ border-color:#e0401f; color:#fff; }
-  .status-btn.active{ background:#e0401f; border-color:#e0401f; color:#fff; font-weight:600; }
+  .status-btn{ background:#fff; border:1px solid #ece3d6; color:#6b6259; padding:6px 12px; border-radius:20px; font-size:12px; cursor:pointer; text-align:left; transition:.2s; }
+  .status-btn:hover{ border-color:#c9beb0; color:#241f1c; }
+  .status-btn.active{ color:#fff; font-weight:600; border-color:transparent; }
+  .status-btn[data-status="new"]:hover{ border-color:#64748b; color:#64748b; }
+  .status-btn[data-status="preparing"]:hover{ border-color:#f59e0b; color:#f59e0b; }
+  .status-btn[data-status="sent"]:hover{ border-color:#3b82f6; color:#3b82f6; }
+  .status-btn[data-status="delivered"]:hover{ border-color:#22c55e; color:#22c55e; }
+  .status-btn.active[data-status="new"]{ background:#64748b; }
+  .status-btn.active[data-status="preparing"]{ background:#f59e0b; }
+  .status-btn.active[data-status="sent"]{ background:#3b82f6; }
+  .status-btn.active[data-status="delivered"]{ background:#22c55e; }
+  .stats-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:8px; }
+  .stat-card{ background:#fff; border-radius:14px; padding:16px 18px; box-shadow:0 4px 20px rgba(36,31,28,.06); }
+  .stat-label{ font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#9a9086; margin-bottom:8px; }
+  .stat-value{ font-size:24px; font-weight:700; color:#241f1c; }
+  .stat-sub{ font-size:12px; color:#6b6259; margin-top:4px; }
+  details > summary{ margin:40px 0 16px; color:#241f1c; font-size:20px; display:flex; align-items:center; gap:10px; cursor:pointer; list-style:none; }
+  details > summary::-webkit-details-marker{ display:none; }
+  details > summary::before{ content:'▸'; font-size:14px; color:#9a9086; }
+  details[open] > summary::before{ content:'▾'; }
 </style>
 </head>
 <body>
@@ -39,11 +56,19 @@
   <span class="status"><span class="dot" id="live-dot"></span><span id="live-label">Connecting…</span></span>
 </p>
 
+<h2>Overview</h2>
+<div class="stats-grid" id="stats-grid"></div>
+
 <h2>Orders <span class="count" id="orders-count">0</span></h2>
 <div id="orders"></div>
 
 <h2>Contact Messages <span class="count" id="messages-count">0</span></h2>
 <div id="messages"></div>
+
+<details id="delivered-details">
+  <summary>Delivered Orders <span class="count" id="delivered-count">0</span></summary>
+  <div id="delivered-orders"></div>
+</details>
 
 <script>
 const STATUSES = [
@@ -72,12 +97,11 @@ async function setOrderStatus(id, status) {
   }
 }
 
-function renderOrders(orders, highlightId) {
-  const container = document.getElementById('orders');
-  document.getElementById('orders-count').textContent = orders.length;
+function renderOrders(containerId, orders, highlightId) {
+  const container = document.getElementById(containerId);
 
   if (orders.length === 0) {
-    container.innerHTML = '<p class="empty">No orders yet.</p>';
+    container.innerHTML = '<p class="empty">No orders here.</p>';
     return;
   }
 
@@ -85,6 +109,7 @@ function renderOrders(orders, highlightId) {
     const mapLink = order.location
       ? `<a class="map-link" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${order.location.lat}&mlon=${order.location.lon}#map=17/${order.location.lat}/${order.location.lon}">View on map</a>`
       : '<span style="color:#5a5550">Not located</span>';
+    const distance = order.distanceKm != null ? `${order.distanceKm} km` : '—';
 
     const statusButtons = STATUSES.map(s => `
       <button type="button" class="status-btn ${order.status === s.value ? 'active' : ''}" data-order-id="${escapeHtml(order.id)}" data-status="${s.value}">${s.label}</button>
@@ -96,6 +121,7 @@ function renderOrders(orders, highlightId) {
       <td>${new Date(order.createdAt).toLocaleString()}</td>
       <td>${escapeHtml(order.customer.name)}<br><small>${escapeHtml(order.customer.phone)}</small></td>
       <td>${escapeHtml(order.customer.address)}${order.customer.notes ? '<br><small>' + escapeHtml(order.customer.notes) + '</small>' : ''}<br>${mapLink}</td>
+      <td>${distance}</td>
       <td>${order.items.map(i => `${i.quantity}× ${escapeHtml(i.name)}`).join('<br>')}</td>
       <td class="total">${order.total.toFixed(2)} CHF</td>
       <td><div class="status-buttons">${statusButtons}</div></td>
@@ -105,10 +131,55 @@ function renderOrders(orders, highlightId) {
 
   container.innerHTML = `
     <table>
-      <thead><tr><th>ID</th><th>Date</th><th>Customer</th><th>Address</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
+      <thead><tr><th>ID</th><th>Date</th><th>Customer</th><th>Address</th><th>Distance</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   `;
+}
+
+function isSameDay(a, b) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+function computeBucket(orders, predicate) {
+  const matching = orders.filter(o => predicate(new Date(o.createdAt)));
+  return {
+    count: matching.length,
+    revenue: matching.reduce((sum, o) => sum + o.total, 0)
+  };
+}
+
+function renderStats(orders) {
+  const now = new Date();
+  const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+  const sevenDaysAgo = new Date(now); sevenDaysAgo.setDate(now.getDate() - 7);
+  const thirtyDaysAgo = new Date(now); thirtyDaysAgo.setDate(now.getDate() - 30);
+
+  const today = computeBucket(orders, d => isSameDay(d, now));
+  const yesterdayStats = computeBucket(orders, d => isSameDay(d, yesterday));
+  const last7 = computeBucket(orders, d => d >= sevenDaysAgo);
+  const last30 = computeBucket(orders, d => d >= thirtyDaysAgo);
+
+  const withDistance = orders.filter(o => o.distanceKm != null);
+  const avgDistance = withDistance.length
+    ? (withDistance.reduce((sum, o) => sum + o.distanceKm, 0) / withDistance.length).toFixed(1)
+    : null;
+
+  const cards = [
+    { label: 'Today', value: today.count, sub: `${today.revenue.toFixed(2)} CHF` },
+    { label: 'Yesterday', value: yesterdayStats.count, sub: `${yesterdayStats.revenue.toFixed(2)} CHF` },
+    { label: 'Last 7 Days', value: last7.count, sub: `${last7.revenue.toFixed(2)} CHF` },
+    { label: 'Last 30 Days', value: last30.count, sub: `${last30.revenue.toFixed(2)} CHF` },
+    { label: 'Avg. Delivery Distance', value: avgDistance != null ? `${avgDistance} km` : '—', sub: `${withDistance.length} located order${withDistance.length === 1 ? '' : 's'}` }
+  ];
+
+  document.getElementById('stats-grid').innerHTML = cards.map(c => `
+    <div class="stat-card">
+      <div class="stat-label">${c.label}</div>
+      <div class="stat-value">${c.value}</div>
+      <div class="stat-sub">${c.sub}</div>
+    </div>
+  `).join('');
 }
 
 function renderMessages(messages) {
@@ -141,7 +212,18 @@ async function loadAll(highlightId) {
     fetch('/api/orders'),
     fetch('/api/contact-messages')
   ]);
-  renderOrders(await ordersRes.json(), highlightId);
+  const orders = await ordersRes.json();
+
+  renderStats(orders);
+
+  const active = orders.filter(o => o.status !== 'delivered');
+  const delivered = orders.filter(o => o.status === 'delivered');
+
+  document.getElementById('orders-count').textContent = active.length;
+  document.getElementById('delivered-count').textContent = delivered.length;
+  renderOrders('orders', active, highlightId);
+  renderOrders('delivered-orders', delivered, highlightId);
+
   renderMessages(await messagesRes.json());
 }
 
@@ -189,11 +271,14 @@ function connectLiveFeed() {
   source.addEventListener('order-status', () => loadAll());
 }
 
-document.getElementById('orders').addEventListener('click', event => {
+function handleStatusClick(event) {
   const button = event.target.closest('.status-btn');
   if (!button) return;
   setOrderStatus(button.dataset.orderId, button.dataset.status);
-});
+}
+
+document.getElementById('orders').addEventListener('click', handleStatusClick);
+document.getElementById('delivered-orders').addEventListener('click', handleStatusClick);
 
 document.getElementById('refresh').addEventListener('click', () => loadAll());
 loadAll();

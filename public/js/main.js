@@ -119,7 +119,16 @@ const translations = {
     trackerReceived: 'Received',
     trackerPreparing: 'Preparing',
     trackerSent: 'On the way',
-    trackerDelivered: 'Delivered'
+    trackerDelivered: 'Delivered',
+    comboTitle: 'Build Your Meal',
+    comboStepLabel: 'Step {current} of {total}',
+    comboStepSide: 'Choose a side (optional)',
+    comboStepDrink: 'Choose a drink (optional)',
+    comboNext: 'Next',
+    comboBack: 'Back',
+    comboAddToCart: 'Add to Cart',
+    comboSkip: 'Skip',
+    comboSkipAddToCart: 'Skip & Add to Cart'
   },
   de: {
     home: 'Startseite',
@@ -189,7 +198,16 @@ const translations = {
     trackerReceived: 'Erhalten',
     trackerPreparing: 'Wird zubereitet',
     trackerSent: 'Unterwegs',
-    trackerDelivered: 'Geliefert'
+    trackerDelivered: 'Geliefert',
+    comboTitle: 'Stelle dein Menü zusammen',
+    comboStepLabel: 'Schritt {current} von {total}',
+    comboStepSide: 'Wähle eine Beilage (optional)',
+    comboStepDrink: 'Wähle ein Getränk (optional)',
+    comboNext: 'Weiter',
+    comboBack: 'Zurück',
+    comboAddToCart: 'In den Warenkorb',
+    comboSkip: 'Überspringen',
+    comboSkipAddToCart: 'Überspringen & In den Warenkorb'
   }
 };
 
@@ -665,11 +683,16 @@ if (trackerCloseBtn) {
 document.body.addEventListener('click', event => {
   const link = event.target.closest('.card a');
   if (!link) return;
-  if (link.textContent.trim().toLowerCase() !== 'order now') return;
   event.preventDefault();
   const card = link.closest('.card');
   const name = card.querySelector('h3').textContent.trim();
   const price = parsePrice(card.querySelector('span').textContent);
+
+  if (card.dataset.comboEligible === 'true' && typeof window.openComboModal === 'function') {
+    window.openComboModal(name, price);
+    return;
+  }
+
   addItemToCart(name, price);
 });
 

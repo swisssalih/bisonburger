@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400;1,500;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link rel="stylesheet" href="css/style.css">
 
@@ -104,7 +104,7 @@ CONTACT
 
 <section id="menu" class="content-section">
 
-<h2 class="title" data-i18n-key="submenu">OUR MENU</h2>
+<h2 class="title" data-i18n-key="submenu" data-reveal>OUR MENU</h2>
 
 <div id="burger-menu"></div>
 
@@ -114,7 +114,7 @@ CONTACT
 
 <section class="content-section">
 
-<h2 class="title">SNACKS</h2>
+<h2 class="title" data-reveal>SNACKS</h2>
 
 <div id="snacks-menu" class="menu-grid"></div>
 
@@ -124,7 +124,7 @@ CONTACT
 
 <section class="content-section">
 
-<h2 class="title">DRINKS</h2>
+<h2 class="title" data-reveal>DRINKS</h2>
 
 <div id="drinks-menu" class="menu-grid"></div>
 
@@ -134,11 +134,11 @@ CONTACT
 
 <section id="about" class="content-section">
 
-<h2 class="title" data-i18n-key="aboutTitle">ABOUT US</h2>
+<h2 class="title" data-i18n-key="aboutTitle" data-reveal>ABOUT US</h2>
 
 <div class="about-content">
 
-<div class="about-text">
+<div class="about-text" data-reveal>
 
 <p data-i18n-key="aboutParagraph1">Bison Burger started with a simple idea: a burger doesn't need shortcuts to be great. Every patty is 160g+ of fresh beef, ground and grilled the same day — never frozen, never pre-formed.</p>
 
@@ -161,7 +161,7 @@ CONTACT
 
 </div>
 
-<div class="about-image">
+<div class="about-image" data-reveal data-reveal-delay="120ms">
 <img src="images/burger.png" alt="Bison Burger">
 </div>
 
@@ -173,11 +173,11 @@ CONTACT
 
 <section id="contact" class="content-section">
 
-<h2 class="title" data-i18n-key="contactTitle">CONTACT</h2>
+<h2 class="title" data-i18n-key="contactTitle" data-reveal>CONTACT</h2>
 
 <div class="contact-content">
 
-<div class="contact-info">
+<div class="contact-info" data-reveal>
   <div class="contact-item">
     <strong data-i18n-key="contactAddressLabel">Address</strong>
     <p>Bahnhofstrasse 12, 8001 Zürich, Switzerland</p>
@@ -196,7 +196,7 @@ CONTACT
   </div>
 </div>
 
-<form id="contact-form" class="contact-form">
+<form id="contact-form" class="contact-form" data-reveal data-reveal-delay="120ms">
   <label for="contact-name" data-i18n-key="fullName">Full Name</label>
   <input type="text" id="contact-name" placeholder="Your full name" required>
   <label for="contact-email" data-i18n-key="email">Email</label>
@@ -278,9 +278,23 @@ CONTACT
   </div>
 </div>
 
+<div class="modal-overlay" id="combo-modal">
+  <div class="modal">
+    <button class="close-btn" type="button" aria-label="Close">×</button>
+    <h2 data-i18n-key="comboTitle">Build Your Meal</h2>
+    <p class="combo-step-label" id="combo-step-label">Step 1 of 2</p>
+    <p class="combo-step-title" id="combo-step-title"></p>
+    <div class="combo-options" id="combo-options"></div>
+    <div class="combo-actions">
+      <button type="button" class="secondary-btn" id="combo-back" data-i18n-key="comboBack" hidden>Back</button>
+      <button type="button" id="combo-next">Next</button>
+    </div>
+  </div>
+</div>
+
 <footer>
 
-<div class="footer-top">
+<div class="footer-top" data-reveal>
 
 <div class="footer-brand">
 <img src="images/logo.png" alt="Bison Burger logo">
@@ -314,6 +328,8 @@ CONTACT
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="js/map.js"></script>
 <script src="js/main.js"></script>
+<script src="js/combo.js"></script>
+<script src="js/reveal.js"></script>
 <script src="js/menu.js"></script>
 
 </body>

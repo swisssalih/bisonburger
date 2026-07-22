@@ -43,9 +43,10 @@ function buildRating(itemId, summary) {
   return container;
 }
 
-function buildCard(item, ratingsMap) {
+function buildCard(item, ratingsMap, { showRating = true, comboEligible = false } = {}) {
   const card = document.createElement('div');
   card.className = 'card';
+  if (comboEligible) card.dataset.comboEligible = 'true';
 
   if (item.tag) {
     const tag = document.createElement('div');
@@ -68,7 +69,7 @@ function buildCard(item, ratingsMap) {
   price.textContent = `${Number(item.price).toFixed(2)} CHF`;
   card.appendChild(price);
 
-  if (item.id) {
+  if (item.id && showRating) {
     const summary = (ratingsMap && ratingsMap[item.id]) || { average: 0, count: 0 };
     card.appendChild(buildRating(item.id, summary));
   }
@@ -84,6 +85,7 @@ function buildCard(item, ratingsMap) {
 function buildBurgerCategory(category, ratingsMap) {
   const wrapper = document.createElement('div');
   wrapper.className = 'menu-category';
+  wrapper.dataset.reveal = '';
 
   const title = document.createElement('h3');
   title.className = 'category-title';
@@ -95,7 +97,7 @@ function buildBurgerCategory(category, ratingsMap) {
 
   const grid = document.createElement('div');
   grid.className = 'menu-grid';
-  (category.items || []).forEach(item => grid.appendChild(buildCard(item, ratingsMap)));
+  (category.items || []).forEach(item => grid.appendChild(buildCard(item, ratingsMap, { comboEligible: true })));
   wrapper.appendChild(grid);
 
   return wrapper;
@@ -131,7 +133,11 @@ async function loadOnlineMenu() {
       burgerContainer.innerHTML = '';
       categories
         .filter(cat => BURGER_CATEGORY_IDS.includes(cat.id))
-        .forEach(cat => burgerContainer.appendChild(buildBurgerCategory(cat, ratingsMap)));
+        .forEach((cat, index) => {
+          const wrapper = buildBurgerCategory(cat, ratingsMap);
+          burgerContainer.appendChild(wrapper);
+          if (typeof window.observeReveal === 'function') window.observeReveal(wrapper, index);
+        });
     }
 
     const snacksCategory = categories.find(cat => cat.id === 'snacks');
@@ -143,8 +149,10 @@ async function loadOnlineMenu() {
     const drinksCategory = categories.find(cat => cat.id === 'drinks');
     if (drinksContainer && drinksCategory) {
       drinksContainer.innerHTML = '';
-      (drinksCategory.items || []).forEach(item => drinksContainer.appendChild(buildCard(item, ratingsMap)));
+      (drinksCategory.items || []).forEach(item => drinksContainer.appendChild(buildCard(item, ratingsMap, { showRating: false })));
     }
+
+    window.bisonMenuCategories = categories;
 
     if (typeof window.applyLanguage === 'function') {
       window.applyLanguage();

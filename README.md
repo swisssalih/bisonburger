@@ -139,6 +139,14 @@ Visit `http://localhost:3000/admin`, log in, and leave the tab open on a
 till/tablet/laptop in the kitchen — new orders will pop in live with a
 sound, no polling or refreshing needed.
 
+The admin page also has an **Overview** stats row (orders + revenue for
+today/yesterday/last 7 days/last 30 days, plus average delivery distance
+computed from each order's geocoded address vs. the restaurant's own
+address — `db.js`'s `distanceKm` on every order, straight-line/Haversine,
+not driving distance). Delivered orders drop out of the main Orders table
+and live in a collapsed "Delivered Orders" section at the bottom so the
+active list doesn't pile up.
+
 ## Known limitations / good next steps
 
 - **Accounts are fake.** Login/register still stores plaintext passwords
