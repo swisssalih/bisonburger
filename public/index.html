@@ -103,7 +103,7 @@ CONTACT
 
 <section id="menu" class="content-section">
 
-<h2 class="title">OUR MENU</h2>
+<h2 class="title" data-i18n-key="submenu">OUR MENU</h2>
 
 <div id="burger-menu"></div>
 
@@ -126,6 +126,87 @@ CONTACT
 <h2 class="title">DRINKS</h2>
 
 <div id="drinks-menu" class="menu-grid"></div>
+
+</section>
+
+<!-- ABOUT -->
+
+<section id="about" class="content-section">
+
+<h2 class="title" data-i18n-key="aboutTitle">ABOUT US</h2>
+
+<div class="about-content">
+
+<div class="about-text">
+
+<p data-i18n-key="aboutParagraph1">Bison Burger started with a simple idea: a burger doesn't need shortcuts to be great. Every patty is 160g+ of fresh beef, ground and grilled the same day — never frozen, never pre-formed.</p>
+
+<p data-i18n-key="aboutParagraph2">Our sauces are made in-house, our buns are baked locally, and our kitchen is open every day of the week so your next craving is never far away.</p>
+
+<div class="about-badges">
+  <div class="about-badge">
+    <strong>100%</strong>
+    <span data-i18n-key="badgeFreshBeef">Fresh Beef</span>
+  </div>
+  <div class="about-badge">
+    <strong>0</strong>
+    <span data-i18n-key="badgeNoFreezer">Frozen Ingredients</span>
+  </div>
+  <div class="about-badge">
+    <strong>7/7</strong>
+    <span data-i18n-key="badgeDaysWeek">Open Every Day</span>
+  </div>
+</div>
+
+</div>
+
+<div class="about-image">
+<img src="images/burger.png" alt="Bison Burger">
+</div>
+
+</div>
+
+</section>
+
+<!-- CONTACT -->
+
+<section id="contact" class="content-section">
+
+<h2 class="title" data-i18n-key="contactTitle">CONTACT</h2>
+
+<div class="contact-content">
+
+<div class="contact-info">
+  <div class="contact-item">
+    <strong data-i18n-key="contactAddressLabel">Address</strong>
+    <p>Bahnhofstrasse 12, 8001 Zürich, Switzerland</p>
+  </div>
+  <div class="contact-item">
+    <strong data-i18n-key="phone">Phone</strong>
+    <p>+41 44 123 45 67</p>
+  </div>
+  <div class="contact-item">
+    <strong data-i18n-key="email">Email</strong>
+    <p>hello@bisonburger.ch</p>
+  </div>
+  <div class="contact-item">
+    <strong data-i18n-key="contactHoursLabel">Opening Hours</strong>
+    <p>Mon&ndash;Sun: 11:00 &ndash; 22:00</p>
+  </div>
+</div>
+
+<form id="contact-form" class="contact-form">
+  <label for="contact-name" data-i18n-key="fullName">Full Name</label>
+  <input type="text" id="contact-name" placeholder="Your full name" required>
+  <label for="contact-email" data-i18n-key="email">Email</label>
+  <input type="email" id="contact-email" placeholder="you@example.com" required>
+  <label for="contact-message" data-i18n-key="contactMessageLabel">Message</label>
+  <textarea id="contact-message" placeholder="How can we help?" required></textarea>
+  <button type="submit">Send Message</button>
+  <div class="message-box" id="contact-status"></div>
+</form>
+
+</div>
 
 </section>
 
@@ -178,6 +259,39 @@ CONTACT
     <div class="message-box" id="cart-message"></div>
   </div>
 </div>
+
+<footer>
+
+<div class="footer-top">
+
+<div class="footer-brand">
+<img src="images/logo.png" alt="Bison Burger logo">
+<h3>BISON BURGER</h3>
+<p data-i18n-key="footerTagline">Premium burgers, honestly made.</p>
+</div>
+
+<div class="footer-col">
+<h4 data-i18n-key="footerQuickLinks">Quick Links</h4>
+<a href="#" data-i18n-key="home">Home</a>
+<a href="#menu" data-i18n-key="menu">Menu</a>
+<a href="#about" data-i18n-key="about">About</a>
+<a href="#contact" data-i18n-key="contact">Contact</a>
+</div>
+
+<div class="footer-col">
+<h4 data-i18n-key="contactTitle">Contact</h4>
+<p>Bahnhofstrasse 12, 8001 Zürich</p>
+<p>+41 44 123 45 67</p>
+<p>hello@bisonburger.ch</p>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+<p>&copy; 2026 Bison Burger. <span data-i18n-key="footerRights">All rights reserved.</span></p>
+</div>
+
+</footer>
 
 <script src="js/main.js"></script>
 <script src="js/menu.js"></script>

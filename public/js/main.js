@@ -13,6 +13,9 @@ const cartSummary = document.getElementById('cart-summary');
 const cartMessage = document.getElementById('cart-message');
 const checkoutForm = document.getElementById('checkout-form');
 const checkoutSubmitBtn = checkoutForm.querySelector('button[type="submit"]');
+const contactForm = document.getElementById('contact-form');
+const contactSubmitBtn = contactForm.querySelector('button[type="submit"]');
+const contactStatus = document.getElementById('contact-status');
 const closeButtons = document.querySelectorAll('.close-btn');
 const langEn = document.getElementById('lang-en');
 const langDe = document.getElementById('lang-de');
@@ -88,7 +91,24 @@ const translations = {
     specialBurgers: 'Special Burgers',
     premiumPicks: 'Premium Picks',
     burgerExperienceDesc: '100% Fresh Beef, Homemade Sauces, Fresh Ingredients and unforgettable taste.',
-    checkoutTitle: 'Your Order'
+    checkoutTitle: 'Your Order',
+    aboutTitle: 'ABOUT US',
+    aboutParagraph1: "Bison Burger started with a simple idea: a burger doesn't need shortcuts to be great. Every patty is 160g+ of fresh beef, ground and grilled the same day — never frozen, never pre-formed.",
+    aboutParagraph2: 'Our sauces are made in-house, our buns are baked locally, and our kitchen is open every day of the week so your next craving is never far away.',
+    badgeFreshBeef: 'Fresh Beef',
+    badgeNoFreezer: 'Frozen Ingredients',
+    badgeDaysWeek: 'Open Every Day',
+    contactTitle: 'CONTACT',
+    contactAddressLabel: 'Address',
+    contactHoursLabel: 'Opening Hours',
+    contactMessageLabel: 'Message',
+    contactSendBtn: 'Send Message',
+    contactSending: 'Sending…',
+    contactSent: "Thanks! We'll get back to you soon.",
+    contactFailed: 'Something went wrong sending your message. Please try again.',
+    footerTagline: 'Premium burgers, honestly made.',
+    footerQuickLinks: 'Quick Links',
+    footerRights: 'All rights reserved.'
   },
   de: {
     home: 'Startseite',
@@ -136,7 +156,24 @@ const translations = {
     specialBurgers: 'Special Burger',
     premiumPicks: 'Premium Auswahlen',
     burgerExperienceDesc: '100% frisches Rindfleisch, hausgemachte Soßen, frische Zutaten und unvergesslicher Geschmack.',
-    checkoutTitle: 'Ihre Bestellung'
+    checkoutTitle: 'Ihre Bestellung',
+    aboutTitle: 'ÜBER UNS',
+    aboutParagraph1: 'Bison Burger begann mit einer einfachen Idee: Ein Burger braucht keine Abkürzungen, um grossartig zu sein. Jedes Patty besteht aus 160g+ frischem Rindfleisch, am selben Tag gewolft und gegrillt — nie tiefgekühlt, nie vorgeformt.',
+    aboutParagraph2: 'Unsere Saucen werden selbst gemacht, unsere Brötchen lokal gebacken, und unsere Küche ist jeden Tag der Woche geöffnet, damit dein nächster Hunger nie weit ist.',
+    badgeFreshBeef: 'Frisches Rindfleisch',
+    badgeNoFreezer: 'Tiefkühlzutaten',
+    badgeDaysWeek: 'Täglich geöffnet',
+    contactTitle: 'KONTAKT',
+    contactAddressLabel: 'Adresse',
+    contactHoursLabel: 'Öffnungszeiten',
+    contactMessageLabel: 'Nachricht',
+    contactSendBtn: 'Nachricht senden',
+    contactSending: 'Wird gesendet…',
+    contactSent: 'Danke! Wir melden uns bald bei dir.',
+    contactFailed: 'Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+    footerTagline: 'Premium Burger, ehrlich gemacht.',
+    footerQuickLinks: 'Schnellzugriff',
+    footerRights: 'Alle Rechte vorbehalten.'
   }
 };
 
@@ -157,7 +194,6 @@ function applyLanguage() {
   btnContact.textContent = t('contactBtn');
   heroSubtitle.textContent = t('premiumExperience');
   heroDescription.textContent = t('burgerExperienceDesc');
-  document.querySelector('.title').textContent = t('submenu');
   cartModalTitle.textContent = t('checkoutTitle');
   loginTab.textContent = t('login');
   registerTab.textContent = t('register');
@@ -181,6 +217,9 @@ function applyLanguage() {
   if (!checkoutSubmitBtn.disabled) {
     checkoutSubmitBtn.textContent = t('placeOrder');
   }
+  if (!contactSubmitBtn.disabled) {
+    contactSubmitBtn.textContent = t('contactSendBtn');
+  }
   if (langEn && langDe) {
     langEn.classList.toggle('active', currentLanguage === 'en');
     langDe.classList.toggle('active', currentLanguage === 'de');
@@ -188,8 +227,8 @@ function applyLanguage() {
   document.querySelectorAll('.card a').forEach(link => {
     link.textContent = t('orderNow');
   });
-  document.querySelectorAll('.category-title[data-i18n-key]').forEach(title => {
-    title.textContent = t(title.dataset.i18nKey);
+  document.querySelectorAll('[data-i18n-key]').forEach(el => {
+    el.textContent = t(el.dataset.i18nKey);
   });
 }
 
@@ -472,6 +511,44 @@ async function submitCheckout(event) {
   }
 }
 
+async function submitContact(event) {
+  event.preventDefault();
+  const name = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const message = document.getElementById('contact-message').value.trim();
+
+  if (!name || !email || !message) {
+    contactStatus.textContent = t('fillAll');
+    contactStatus.style.color = '#c0392b';
+    return;
+  }
+
+  contactSubmitBtn.disabled = true;
+  contactSubmitBtn.textContent = t('contactSending');
+  contactStatus.textContent = '';
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, message })
+    });
+
+    if (!res.ok) throw new Error(`server responded ${res.status}`);
+
+    contactForm.reset();
+    contactStatus.textContent = t('contactSent');
+    contactStatus.style.color = '#0a8f2f';
+  } catch (err) {
+    console.error(err);
+    contactStatus.textContent = t('contactFailed');
+    contactStatus.style.color = '#c0392b';
+  } finally {
+    contactSubmitBtn.disabled = false;
+    contactSubmitBtn.textContent = t('contactSendBtn');
+  }
+}
+
 loginForm.addEventListener('submit', loginUser);
 registerForm.addEventListener('submit', registerUser);
 loginTab.addEventListener('click', () => setActiveTab('login'));
@@ -530,6 +607,7 @@ cartItemsContainer.addEventListener('click', event => {
 });
 
 checkoutForm.addEventListener('submit', submitCheckout);
+contactForm.addEventListener('submit', submitContact);
 
 applyLanguage();
 updateAccountUI();

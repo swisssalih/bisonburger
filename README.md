@@ -1,11 +1,14 @@
 # Bison Burger
 
 Marketing site + ordering flow for Bison Burger (Switzerland). Single-page
-site with EN/DE language toggle, a cart, and a delivery checkout form.
+site with EN/DE language toggle, a cart, a delivery checkout form, an
+About/Contact section, and a footer.
 
 This branch (`feature/nodejs-express-revamp`) moves the project from a
 static HTML file opened directly in a browser to a small Node.js/Express
-app, without changing how the site looks.
+app, without changing the core visual design — aside from a deliberate
+follow-up tweak (see "Hybrid theme" below) and the new About/Contact/
+footer sections.
 
 ## What changed
 
@@ -13,8 +16,11 @@ app, without changing how the site looks.
   - `GET /api/menu` — reads `data/menu.json` and returns the full menu.
   - `POST /api/orders` — validates a checkout payload, computes the total
     server-side, and appends the order to `data/orders.json`.
-  - `GET /api/orders` — lists placed orders (no auth yet — see Known
-    limitations).
+  - `GET /api/orders` — lists placed orders. **Requires admin auth.**
+  - `POST /api/contact` — validates and stores a contact form submission
+    in `data/contact-messages.json`.
+  - `GET /api/contact-messages` — lists contact submissions. **Requires
+    admin auth.**
 - **Menu is now data-driven.** `data/menu.json` is the single source of
   truth for every burger, snack and drink. `public/js/menu.js` fetches
   `/api/menu` and renders the exact same card/category markup the site
@@ -27,33 +33,48 @@ app, without changing how the site looks.
 - **Snacks & Drinks are orderable.** Those cards had no "Order Now" button
   before (`public/js/menu.js` now renders one, reusing the existing
   `.card a` button style — same look as the burger cards).
+- **About, Contact and a footer were added.** The nav already linked to
+  `#about` and `#contact` but those sections didn't exist — the links
+  went nowhere. Contact includes a working form (posts to `/api/contact`).
+  Both sections and the footer are fully translated (EN/DE).
+- **A minimal admin page** at `/admin` (also behind admin auth) lists
+  placed orders and contact messages in a simple table — see "Admin
+  access" below.
 - **Code split out of the single HTML file** for maintainability:
-  - `public/css/style.css` — all styles (unchanged rules, just moved out
-    of the inline `<style>` block).
+  - `public/css/style.css` — all styles.
   - `public/js/main.js` — language switching, account/login (still
-    client-side/localStorage — see Known limitations), cart, checkout.
+    client-side/localStorage — see Known limitations), cart, checkout,
+    contact form.
   - `public/js/menu.js` — fetches and renders the menu.
 - Small UX additions that don't touch the visual design language: a
   loading state while the menu fetches, a disabled/"Placing order…" state
-  on the checkout button while the request is in flight, and a subtle
-  fade-in on menu cards as they render.
+  on the checkout and contact buttons while a request is in flight, and a
+  subtle fade-in on menu cards as they render.
 
-Nothing about the page's layout, colors, fonts, or copy changed — the
-menu data was extracted 1:1 from what used to be hardcoded in the HTML.
+### Hybrid theme
+
+The header and hero keep the original dark, moody look. The content
+sections (menu, snacks, drinks, about, contact) were switched to a warm
+off-white background with dark text — the all-dark version made the menu
+hard to read. The footer stays dark to bookend the page like the header.
 
 ## Project structure
 
 ```
-server.js            Express server + API routes
+server.js             Express server + API routes
 package.json
+.env.example           Copy to .env to set PORT / admin credentials
 data/
-  menu.json           Menu content (source of truth for /api/menu)
-  orders.json          Orders placed through checkout (gitignored, created at runtime)
-public/               Everything served to the browser
+  menu.json             Menu content (source of truth for /api/menu)
+  orders.json           Orders placed through checkout (gitignored, created at runtime)
+  contact-messages.json Contact form submissions (gitignored, created at runtime)
+views/
+  admin.html            Simple orders/messages viewer, served at /admin (auth-protected)
+public/                Everything served to the browser
   index.html
   css/style.css
-  js/main.js           Language/account/cart/checkout logic
-  js/menu.js           Fetches /api/menu and renders menu cards
+  js/main.js            Language/account/cart/checkout/contact logic
+  js/menu.js            Fetches /api/menu and renders menu cards
   images/
 ```
 
@@ -67,10 +88,20 @@ longer needed for that purpose.
 
 ```bash
 npm install
-npm start        # http://localhost:3000
+cp .env.example .env    # then edit ADMIN_USER / ADMIN_PASSWORD
+npm start                # http://localhost:3000
 ```
 
 `npm run dev` uses `node --watch` to restart on file changes.
+
+## Admin access
+
+`GET /api/orders`, `GET /api/contact-messages` and `/admin` are protected
+with HTTP Basic Auth, credentials from `ADMIN_USER` / `ADMIN_PASSWORD` env
+vars (defaults to `admin` / `changeme` if unset — **the server logs a
+warning on startup if you're still using the default password**). Visit
+`http://localhost:3000/admin` and log in with those credentials to see
+placed orders and contact messages.
 
 ## Known limitations / good next steps
 
@@ -78,8 +109,11 @@ npm start        # http://localhost:3000
   in `localStorage` on the client (unchanged from before) — fine for a
   demo, not for real customer accounts. Needs real backend auth
   (hashed passwords, sessions) before going live.
-- **`/api/orders` has no auth.** Anyone can read all placed orders. Add
-  an admin login before exposing this beyond localhost.
-- **Orders live in a JSON file**, not a database — fine for low volume,
-  but will need a real datastore (SQLite/Postgres) if order volume grows.
+- **Admin auth is Basic Auth over HTTP.** Fine for localhost/testing;
+  put this behind HTTPS before exposing it anywhere public.
+- **Orders and messages live in JSON files**, not a database — fine for
+  low volume, but will need a real datastore (SQLite/Postgres) if volume
+  grows.
+- **No payment integration** — checkout only collects delivery details,
+  assumes pay-on-delivery.
 - **No automated tests yet.**

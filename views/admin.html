@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bison Burger | Admin</title>
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ font-family:'Segoe UI',Arial,sans-serif; background:#0d0d0d; color:#eee; padding:40px 6%; }
+  h1{ color:#d60000; margin-bottom:8px; }
+  h2{ margin:40px 0 16px; color:#fff; font-size:20px; }
+  table{ width:100%; border-collapse:collapse; background:#141414; border-radius:10px; overflow:hidden; }
+  th, td{ text-align:left; padding:12px 14px; border-bottom:1px solid #262626; font-size:14px; }
+  th{ background:#1c1c1c; color:#bbb; text-transform:uppercase; letter-spacing:.5px; font-size:12px; }
+  tr:last-child td{ border-bottom:none; }
+  .empty{ color:#777; padding:20px 0; }
+  .total{ color:#00d604; font-weight:bold; }
+  .refresh{ background:#d60000; color:#fff; border:none; padding:10px 18px; border-radius:30px; cursor:pointer; font-weight:600; }
+  .refresh:hover{ background:#fff; color:#000; }
+</style>
+</head>
+<body>
+
+<h1>Bison Burger — Admin</h1>
+<button class="refresh" id="refresh">Refresh</button>
+
+<h2>Orders</h2>
+<div id="orders"></div>
+
+<h2>Contact Messages</h2>
+<div id="messages"></div>
+
+<script>
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadOrders() {
+  const container = document.getElementById('orders');
+  const res = await fetch('/api/orders');
+  const orders = await res.json();
+  if (orders.length === 0) {
+    container.innerHTML = '<p class="empty">No orders yet.</p>';
+    return;
+  }
+  const rows = orders.slice().reverse().map(order => `
+    <tr>
+      <td>${escapeHtml(order.id)}</td>
+      <td>${new Date(order.createdAt).toLocaleString()}</td>
+      <td>${escapeHtml(order.customer.name)}<br><small>${escapeHtml(order.customer.phone)}</small></td>
+      <td>${escapeHtml(order.customer.address)}${order.customer.notes ? '<br><small>' + escapeHtml(order.customer.notes) + '</small>' : ''}</td>
+      <td>${order.items.map(i => `${i.quantity}× ${escapeHtml(i.name)}`).join('<br>')}</td>
+      <td class="total">${order.total.toFixed(2)} CHF</td>
+    </tr>
+  `).join('');
+  container.innerHTML = `
+    <table>
+      <thead><tr><th>ID</th><th>Date</th><th>Customer</th><th>Address</th><th>Items</th><th>Total</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+async function loadMessages() {
+  const container = document.getElementById('messages');
+  const res = await fetch('/api/contact-messages');
+  const messages = await res.json();
+  if (messages.length === 0) {
+    container.innerHTML = '<p class="empty">No messages yet.</p>';
+    return;
+  }
+  const rows = messages.slice().reverse().map(msg => `
+    <tr>
+      <td>${new Date(msg.createdAt).toLocaleString()}</td>
+      <td>${escapeHtml(msg.name)}<br><small>${escapeHtml(msg.email)}</small></td>
+      <td>${escapeHtml(msg.message)}</td>
+    </tr>
+  `).join('');
+  container.innerHTML = `
+    <table>
+      <thead><tr><th>Date</th><th>From</th><th>Message</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function loadAll() {
+  loadOrders();
+  loadMessages();
+}
+
+document.getElementById('refresh').addEventListener('click', loadAll);
+loadAll();
+</script>
+
+</body>
+</html>
