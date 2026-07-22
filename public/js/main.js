@@ -42,6 +42,12 @@ const deliveryNameInput = document.getElementById('delivery-name');
 const deliveryPhoneInput = document.getElementById('delivery-phone');
 const deliveryAddressInput = document.getElementById('delivery-address');
 const deliveryNotesInput = document.getElementById('delivery-notes');
+const orderTracker = document.getElementById('order-tracker');
+const trackerOrderIdEl = document.getElementById('tracker-order-id');
+const trackerCloseBtn = document.getElementById('tracker-close');
+const STATUS_ORDER = ['new', 'preparing', 'sent', 'delivered'];
+let trackerSource = null;
+let trackedOrderId = null;
 let currentLanguage = localStorage.getItem('bisonLang') || 'en';
 
 const translations = {
@@ -108,7 +114,12 @@ const translations = {
     contactFailed: 'Something went wrong sending your message. Please try again.',
     footerTagline: 'Premium burgers, honestly made.',
     footerQuickLinks: 'Quick Links',
-    footerRights: 'All rights reserved.'
+    footerRights: 'All rights reserved.',
+    trackerTitle: 'Tracking order',
+    trackerReceived: 'Received',
+    trackerPreparing: 'Preparing',
+    trackerSent: 'On the way',
+    trackerDelivered: 'Delivered'
   },
   de: {
     home: 'Startseite',
@@ -173,7 +184,12 @@ const translations = {
     contactFailed: 'Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
     footerTagline: 'Premium Burger, ehrlich gemacht.',
     footerQuickLinks: 'Schnellzugriff',
-    footerRights: 'Alle Rechte vorbehalten.'
+    footerRights: 'Alle Rechte vorbehalten.',
+    trackerTitle: 'Bestellung verfolgen',
+    trackerReceived: 'Erhalten',
+    trackerPreparing: 'Wird zubereitet',
+    trackerSent: 'Unterwegs',
+    trackerDelivered: 'Geliefert'
   }
 };
 
@@ -403,9 +419,65 @@ function removeCartItem(name) {
   showCartMessage(t('removedFromCart', { name }));
 }
 
+function renderTrackerStatus(status) {
+  const idx = STATUS_ORDER.indexOf(status);
+  orderTracker.querySelectorAll('.step').forEach(step => {
+    const stepIdx = STATUS_ORDER.indexOf(step.dataset.step);
+    step.classList.toggle('done', stepIdx !== -1 && stepIdx < idx);
+    step.classList.toggle('active', stepIdx === idx);
+  });
+}
+
+function stopOrderTracking() {
+  if (trackerSource) {
+    trackerSource.close();
+    trackerSource = null;
+  }
+  trackedOrderId = null;
+  orderTracker.hidden = true;
+  localStorage.removeItem('bisonLastOrder');
+}
+
+async function startOrderTracking(orderId) {
+  if (trackedOrderId === orderId) return;
+  if (trackerSource) {
+    trackerSource.close();
+    trackerSource = null;
+  }
+
+  try {
+    const res = await fetch(`/api/orders/${orderId}/track`);
+    if (!res.ok) throw new Error('not found');
+    const info = await res.json();
+
+    trackedOrderId = orderId;
+    trackerOrderIdEl.textContent = `#${orderId}`;
+    orderTracker.hidden = false;
+    renderTrackerStatus(info.status);
+
+    if (info.status === 'delivered') return;
+
+    trackerSource = new EventSource(`/api/orders/${orderId}/track/stream`);
+    trackerSource.addEventListener('status', event => {
+      const data = JSON.parse(event.data);
+      renderTrackerStatus(data.status);
+      if (data.status === 'delivered') {
+        trackerSource.close();
+        trackerSource = null;
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    localStorage.removeItem('bisonLastOrder');
+  }
+}
+
 function openCartModal() {
   loadCart();
   openModal(cartModal);
+
+  const last = JSON.parse(localStorage.getItem('bisonLastOrder') || 'null');
+  if (last && last.id) startOrderTracking(last.id);
 }
 
 function registerUser(event) {
@@ -504,6 +576,8 @@ async function submitCheckout(event) {
     loadCart();
     checkoutForm.reset();
     if (typeof window.resetCheckoutLocation === 'function') window.resetCheckoutLocation();
+    localStorage.setItem('bisonLastOrder', JSON.stringify({ id: order.id }));
+    startOrderTracking(order.id);
     showCartMessage(t('orderPlaced', { orderId: order.id }));
   } catch (err) {
     console.error(err);
@@ -584,6 +658,9 @@ closeButtons.forEach(button => {
     closeModal(button.closest('.modal-overlay'));
   });
 });
+if (trackerCloseBtn) {
+  trackerCloseBtn.addEventListener('click', stopOrderTracking);
+}
 
 document.body.addEventListener('click', event => {
   const link = event.target.closest('.card a');

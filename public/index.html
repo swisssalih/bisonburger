@@ -244,6 +244,21 @@ CONTACT
   <div class="modal">
     <button class="close-btn" type="button" aria-label="Close">×</button>
     <h2>Your Order</h2>
+
+    <div class="order-tracker" id="order-tracker" hidden>
+      <button type="button" class="tracker-close" id="tracker-close" aria-label="Dismiss tracker">×</button>
+      <div class="tracker-header">
+        <span data-i18n-key="trackerTitle">Tracking order</span>
+        <strong id="tracker-order-id"></strong>
+      </div>
+      <div class="tracker-steps">
+        <span class="step" data-step="new" data-i18n-key="trackerReceived">Received</span>
+        <span class="step" data-step="preparing" data-i18n-key="trackerPreparing">Preparing</span>
+        <span class="step" data-step="sent" data-i18n-key="trackerSent">On the way</span>
+        <span class="step" data-step="delivered" data-i18n-key="trackerDelivered">Delivered</span>
+      </div>
+    </div>
+
     <div class="cart-items" id="cart-items"></div>
     <div class="cart-summary" id="cart-summary">Total: 0.00 CHF</div>
     <form id="checkout-form">

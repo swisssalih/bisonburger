@@ -35,7 +35,16 @@ db.exec(`
     message TEXT NOT NULL,
     created_at TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS ratings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_id TEXT NOT NULL,
+    rating INTEGER NOT NULL,
+    created_at TEXT NOT NULL
+  );
 `);
+
+const ORDER_STATUSES = ['new', 'preparing', 'sent', 'delivered'];
 
 function upsertCustomer({ name, phone, address }) {
   const now = new Date().toISOString();
@@ -82,6 +91,20 @@ function listOrders() {
   }));
 }
 
+function updateOrderStatus(id, status) {
+  if (!ORDER_STATUSES.includes(status)) {
+    throw new Error(`Invalid status: ${status}`);
+  }
+  const result = db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, id);
+  return result.changes > 0;
+}
+
+function getOrderTrackingInfo(id) {
+  const row = db.prepare('SELECT id, status, total, created_at FROM orders WHERE id = ?').get(id);
+  if (!row) return null;
+  return { id: row.id, status: row.status, total: row.total, createdAt: row.created_at };
+}
+
 function insertContactMessage({ id, name, email, message }) {
   const createdAt = new Date().toISOString();
   db.prepare('INSERT INTO contact_messages (id, name, email, message, created_at) VALUES (?, ?, ?, ?, ?)')
@@ -94,10 +117,39 @@ function listContactMessages() {
     .map(row => ({ id: row.id, name: row.name, email: row.email, message: row.message, createdAt: row.created_at }));
 }
 
+function addRating(itemId, rating) {
+  const createdAt = new Date().toISOString();
+  db.prepare('INSERT INTO ratings (item_id, rating, created_at) VALUES (?, ?, ?)').run(itemId, rating, createdAt);
+  return getRatingSummary(itemId);
+}
+
+function getRatingSummary(itemId) {
+  const row = db.prepare('SELECT AVG(rating) AS average, COUNT(*) AS count FROM ratings WHERE item_id = ?').get(itemId);
+  return {
+    itemId,
+    average: row.count > 0 ? Math.round(row.average * 10) / 10 : 0,
+    count: row.count
+  };
+}
+
+function getAllRatingSummaries() {
+  const rows = db.prepare('SELECT item_id, AVG(rating) AS average, COUNT(*) AS count FROM ratings GROUP BY item_id').all();
+  const summary = {};
+  for (const row of rows) {
+    summary[row.item_id] = { average: Math.round(row.average * 10) / 10, count: row.count };
+  }
+  return summary;
+}
+
 module.exports = {
+  ORDER_STATUSES,
   upsertCustomer,
   insertOrder,
   listOrders,
+  updateOrderStatus,
+  getOrderTrackingInfo,
   insertContactMessage,
-  listContactMessages
+  listContactMessages,
+  addRating,
+  getAllRatingSummaries
 };

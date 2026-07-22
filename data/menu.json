@@ -5,9 +5,9 @@
       "name": "Classic Burgers",
       "translationKey": "classicBurgers",
       "items": [
-        { "name": "Bison Burger Classic", "tag": "CLASSIC", "description": "160g Beef • Cheddar • BBQ • Tartar", "price": 16.70 },
-        { "name": "Bison Burger Large", "tag": "LARGE", "description": "180g Beef • Cheddar • BBQ • Tartar", "price": 17.70 },
-        { "name": "Bison Burger XLarge", "tag": "XLARGE", "description": "200g Beef • Cheddar • BBQ • Tartar", "price": 18.70 }
+        { "id": "bison-burger-classic", "name": "Bison Burger Classic", "tag": "CLASSIC", "description": "160g Beef • Cheddar • BBQ • Tartar", "price": 16.70 },
+        { "id": "bison-burger-large", "name": "Bison Burger Large", "tag": "LARGE", "description": "180g Beef • Cheddar • BBQ • Tartar", "price": 17.70 },
+        { "id": "bison-burger-xlarge", "name": "Bison Burger XLarge", "tag": "XLARGE", "description": "200g Beef • Cheddar • BBQ • Tartar", "price": 18.70 }
       ]
     },
     {
@@ -15,9 +15,9 @@
       "name": "Bacon Burgers",
       "translationKey": "baconBurgers",
       "items": [
-        { "name": "Bison Speck Classic", "tag": "BACON", "description": "160g Beef • Bacon • Cheddar", "price": 16.90 },
-        { "name": "Bison Speck Large", "tag": "BACON", "description": "180g Beef • Bacon • Cheddar", "price": 17.90 },
-        { "name": "Bison Speck XLarge", "tag": "BACON", "description": "200g Beef • Bacon • Cheddar", "price": 18.90 }
+        { "id": "bison-speck-classic", "name": "Bison Speck Classic", "tag": "BACON", "description": "160g Beef • Bacon • Cheddar", "price": 16.90 },
+        { "id": "bison-speck-large", "name": "Bison Speck Large", "tag": "BACON", "description": "180g Beef • Bacon • Cheddar", "price": 17.90 },
+        { "id": "bison-speck-xlarge", "name": "Bison Speck XLarge", "tag": "BACON", "description": "200g Beef • Bacon • Cheddar", "price": 18.90 }
       ]
     },
     {
@@ -25,9 +25,9 @@
       "name": "Hawaii Burgers",
       "translationKey": "hawaiiBurgers",
       "items": [
-        { "name": "Bison Hawaii Classic", "tag": "HAWAII", "description": "Beef • Bacon • Pineapple", "price": 16.90 },
-        { "name": "Bison Hawaii Large", "tag": "HAWAII", "description": "Beef • Bacon • Pineapple", "price": 17.90 },
-        { "name": "Bison Hawaii XLarge", "tag": "HAWAII", "description": "Beef • Bacon • Pineapple", "price": 18.90 }
+        { "id": "bison-hawaii-classic", "name": "Bison Hawaii Classic", "tag": "HAWAII", "description": "Beef • Bacon • Pineapple", "price": 16.90 },
+        { "id": "bison-hawaii-large", "name": "Bison Hawaii Large", "tag": "HAWAII", "description": "Beef • Bacon • Pineapple", "price": 17.90 },
+        { "id": "bison-hawaii-xlarge", "name": "Bison Hawaii XLarge", "tag": "HAWAII", "description": "Beef • Bacon • Pineapple", "price": 18.90 }
       ]
     },
     {
@@ -35,9 +35,9 @@
       "name": "Special Burgers",
       "translationKey": "specialBurgers",
       "items": [
-        { "name": "Bison FCL Classic", "tag": "FCL", "description": "160g Beef • Bacon • Raclette Cheese", "price": 16.90 },
-        { "name": "Bison FCL Large", "tag": "FCL", "description": "180g Beef • Bacon • Raclette Cheese", "price": 17.90 },
-        { "name": "Bison FCL XLarge", "tag": "FCL", "description": "200g Beef • Bacon • Raclette Cheese", "price": 18.90 }
+        { "id": "bison-fcl-classic", "name": "Bison FCL Classic", "tag": "FCL", "description": "160g Beef • Bacon • Raclette Cheese", "price": 16.90 },
+        { "id": "bison-fcl-large", "name": "Bison FCL Large", "tag": "FCL", "description": "180g Beef • Bacon • Raclette Cheese", "price": 17.90 },
+        { "id": "bison-fcl-xlarge", "name": "Bison FCL XLarge", "tag": "FCL", "description": "200g Beef • Bacon • Raclette Cheese", "price": 18.90 }
       ]
     },
     {
@@ -45,37 +45,37 @@
       "name": "Premium Picks",
       "translationKey": "premiumPicks",
       "items": [
-        { "name": "Bison Chicken Burger", "tag": "CHICKEN", "description": "150g Crispy Chicken • Cheddar • BBQ Sauce", "price": 15.90 },
-        { "name": "Bison Döner Burger", "tag": "DONER", "description": "Döner Meat • Raclette • Bacon", "price": 16.90 },
-        { "name": "Bison Vegetarian", "tag": "VEGETARIAN", "description": "Vegetarian Patty • Cheddar • Fresh Salad", "price": 15.90 },
-        { "name": "Bison Kids Burger", "tag": "KIDS", "description": "120g Beef • Cheddar • BBQ Sauce", "price": 12.90 }
+        { "id": "bison-chicken-burger", "name": "Bison Chicken Burger", "tag": "CHICKEN", "description": "150g Crispy Chicken • Cheddar • BBQ Sauce", "price": 15.90 },
+        { "id": "bison-doner-burger", "name": "Bison Döner Burger", "tag": "DONER", "description": "Döner Meat • Raclette • Bacon", "price": 16.90 },
+        { "id": "bison-vegetarian", "name": "Bison Vegetarian", "tag": "VEGETARIAN", "description": "Vegetarian Patty • Cheddar • Fresh Salad", "price": 15.90 },
+        { "id": "bison-kids-burger", "name": "Bison Kids Burger", "tag": "KIDS", "description": "120g Beef • Cheddar • BBQ Sauce", "price": 12.90 }
       ]
     },
     {
       "id": "snacks",
       "name": "SNACKS",
       "items": [
-        { "name": "French Fries", "price": 8.90 },
-        { "name": "Country Cut Fries", "price": 9.70 },
-        { "name": "Sweet Potato Fries", "price": 10.20 },
-        { "name": "Onion Rings", "price": 8.70 },
-        { "name": "Chili Cheese Nuggets", "price": 9.40 },
-        { "name": "Mozzarella Sticks", "price": 9.40 },
-        { "name": "Chicken Nuggets", "price": 9.90 }
+        { "id": "french-fries", "name": "French Fries", "price": 8.90 },
+        { "id": "country-cut-fries", "name": "Country Cut Fries", "price": 9.70 },
+        { "id": "sweet-potato-fries", "name": "Sweet Potato Fries", "price": 10.20 },
+        { "id": "onion-rings", "name": "Onion Rings", "price": 8.70 },
+        { "id": "chili-cheese-nuggets", "name": "Chili Cheese Nuggets", "price": 9.40 },
+        { "id": "mozzarella-sticks", "name": "Mozzarella Sticks", "price": 9.40 },
+        { "id": "chicken-nuggets", "name": "Chicken Nuggets", "price": 9.90 }
       ]
     },
     {
       "id": "drinks",
       "name": "DRINKS",
       "items": [
-        { "name": "Coca Cola 330 ml", "price": 3.50 },
-        { "name": "Coca Cola 0.5L", "price": 4.00 },
-        { "name": "Coca Cola Zero 330 ml", "price": 3.50 },
-        { "name": "Coca Cola Zero 0.5L", "price": 4.00 },
-        { "name": "Fanta", "price": 4.00 },
-        { "name": "Ice Tea Lemon", "price": 4.00 },
-        { "name": "Ice Tea Peach", "price": 4.00 },
-        { "name": "Sprite", "price": 4.00 }
+        { "id": "coca-cola-330ml", "name": "Coca Cola 330 ml", "price": 3.50 },
+        { "id": "coca-cola-05l", "name": "Coca Cola 0.5L", "price": 4.00 },
+        { "id": "coca-cola-zero-330ml", "name": "Coca Cola Zero 330 ml", "price": 3.50 },
+        { "id": "coca-cola-zero-05l", "name": "Coca Cola Zero 0.5L", "price": 4.00 },
+        { "id": "fanta", "name": "Fanta", "price": 4.00 },
+        { "id": "ice-tea-lemon", "name": "Ice Tea Lemon", "price": 4.00 },
+        { "id": "ice-tea-peach", "name": "Ice Tea Peach", "price": 4.00 },
+        { "id": "sprite", "name": "Sprite", "price": 4.00 }
       ]
     }
   ]

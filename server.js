@@ -52,10 +52,22 @@ function requireAdmin(req, res, next) {
 
 // --- Live order notifications (Server-Sent Events) ---
 const sseClients = new Set();
+const trackClients = new Map(); // orderId -> Set<res>
 
 function broadcastNewOrder(order) {
   const payload = `event: new-order\ndata: ${JSON.stringify(order)}\n\n`;
   for (const client of sseClients) client.write(payload);
+}
+
+function broadcastOrderStatus(orderId, status) {
+  const adminPayload = `event: order-status\ndata: ${JSON.stringify({ id: orderId, status })}\n\n`;
+  for (const client of sseClients) client.write(adminPayload);
+
+  const trackers = trackClients.get(orderId);
+  if (trackers) {
+    const trackPayload = `event: status\ndata: ${JSON.stringify({ id: orderId, status })}\n\n`;
+    for (const client of trackers) client.write(trackPayload);
+  }
 }
 
 app.get('/api/orders/stream', requireAdmin, (req, res) => {
@@ -69,6 +81,32 @@ app.get('/api/orders/stream', requireAdmin, (req, res) => {
 
   sseClients.add(res);
   req.on('close', () => sseClients.delete(res));
+});
+
+app.get('/api/orders/:id/track/stream', (req, res) => {
+  const { id } = req.params;
+  if (!store.getOrderTrackingInfo(id)) {
+    return res.status(404).end();
+  }
+
+  res.set({
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive'
+  });
+  res.flushHeaders();
+  res.write(': connected\n\n');
+
+  if (!trackClients.has(id)) trackClients.set(id, new Set());
+  trackClients.get(id).add(res);
+
+  req.on('close', () => {
+    const set = trackClients.get(id);
+    if (set) {
+      set.delete(res);
+      if (set.size === 0) trackClients.delete(id);
+    }
+  });
 });
 
 // --- Menu ---
@@ -93,6 +131,7 @@ app.get('/api/geocode', async (req, res, next) => {
     url.searchParams.set('q', address);
     url.searchParams.set('format', 'json');
     url.searchParams.set('limit', '1');
+    url.searchParams.set('countrycodes', 'ch');
 
     const upstream = await fetch(url, {
       headers: { 'User-Agent': 'BisonBurgerSite/1.0 (checkout address preview)' }
@@ -163,6 +202,62 @@ app.post('/api/orders', (req, res, next) => {
     broadcastNewOrder(order);
 
     res.status(201).json(order);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.patch('/api/orders/:id/status', requireAdmin, (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body || {};
+
+    if (!store.ORDER_STATUSES.includes(status)) {
+      return res.status(400).json({ error: `Status must be one of: ${store.ORDER_STATUSES.join(', ')}` });
+    }
+
+    const updated = store.updateOrderStatus(id, status);
+    if (!updated) return res.status(404).json({ error: 'Order not found.' });
+
+    broadcastOrderStatus(id, status);
+    res.json({ id, status });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Public order tracking (customers look up their own order by id, no PII exposed)
+app.get('/api/orders/:id/track', (req, res, next) => {
+  try {
+    const info = store.getOrderTrackingInfo(req.params.id);
+    if (!info) return res.status(404).json({ error: 'Order not found.' });
+    res.json(info);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// --- Ratings ---
+app.get('/api/ratings', (req, res, next) => {
+  try {
+    res.json(store.getAllRatingSummaries());
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/ratings', (req, res, next) => {
+  try {
+    const { itemId, rating } = req.body || {};
+    if (typeof itemId !== 'string' || !itemId) {
+      return res.status(400).json({ error: 'Missing itemId.' });
+    }
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'Rating must be an integer from 1 to 5.' });
+    }
+
+    const summary = store.addRating(itemId, rating);
+    res.status(201).json(summary);
   } catch (err) {
     next(err);
   }

@@ -19,15 +19,25 @@ app backed by SQLite, with a from-scratch light/warm redesign (see
   - `GET /api/orders/stream` — Server-Sent Events feed that pushes a
     `new-order` event the instant an order comes in. **Requires admin
     auth.**
-  - `GET /api/geocode?address=...` — proxies OpenStreetMap Nominatim so
-    the checkout map can show where an address actually is.
+  - `GET /api/geocode?address=...` — proxies OpenStreetMap Nominatim
+    (biased to Switzerland via `countrycodes=ch`) so the checkout map can
+    show where an address actually is.
+  - `PATCH /api/orders/:id/status` — admin sets an order's status
+    (`new` → `preparing` → `sent` → `delivered`). **Requires admin auth.**
+  - `GET /api/orders/:id/track` / `GET /api/orders/:id/track/stream` —
+    public (order id acts as the access token), lets a customer poll or
+    live-subscribe to their own order's status without exposing anyone
+    else's data.
+  - `GET /api/ratings` / `POST /api/ratings` — public menu item ratings
+    (1–5 stars, aggregated).
   - `POST /api/contact` / `GET /api/contact-messages` — same pattern for
     the contact form (the GET requires admin auth).
 - **Real database.** `db.js` uses Node's built-in `node:sqlite` module
   (no native build step, no extra dependency) against
   `data/bisonburger.db`, with `customers` and `orders` tables (customers
-  are upserted by phone number, so repeat orders update the same row) and
-  a `contact_messages` table. Replaces the earlier JSON-file storage.
+  are upserted by phone number, so repeat orders update the same row),
+  plus `contact_messages` and `ratings` tables. Replaces the earlier
+  JSON-file storage.
 - **Live order notifications.** Placing an order broadcasts over SSE to
   anyone with `/admin` open — the new order appears instantly, the row
   flashes, the browser tab title changes, and a short beep plays (Web
@@ -41,8 +51,21 @@ app backed by SQLite, with a from-scratch light/warm redesign (see
   before ordering. The resolved lat/lon is stored with the order, and the
   admin page links straight to it on OpenStreetMap.
 - **Menu is now data-driven.** `data/menu.json` is the single source of
-  truth for every burger, snack and drink; `public/js/menu.js` fetches
-  `/api/menu` and renders it.
+  truth for every burger, snack and drink (each item has a stable `id`
+  now, used by ratings); `public/js/menu.js` fetches `/api/menu` and
+  renders it.
+- **Order status workflow.** `/admin` has four status buttons per order
+  (Received/Preparing/Sent/Delivered) — clicking one calls
+  `PATCH /api/orders/:id/status`. The customer sees this too: after
+  placing an order, a tracker in the cart modal shows the same four
+  steps and updates live (SSE) as the status changes, with no need to
+  refresh or re-open the site — it's restored from `localStorage` even
+  after a page reload, until dismissed or delivered.
+- **Menu item ratings.** Every card has a 5-star widget; voting posts to
+  `/api/ratings` and updates the shown average/count immediately. One
+  vote per item per browser (tracked in `localStorage`, not accounts —
+  soft protection, not airtight, consistent with the rest of the app's
+  no-real-accounts posture).
 - **Snacks & Drinks are orderable**, and **About/Contact/footer** sections
   exist now (the nav used to link to `#about`/`#contact` with nothing
   there) — both fully translated EN/DE, Contact has a working form.
@@ -135,4 +158,7 @@ sound, no polling or refreshing needed.
   a paid geocoder behind the same endpoint.
 - **No payment integration** — checkout only collects delivery details,
   assumes pay-on-delivery.
+- **Order status is a fixed 4-step flow**, and there's no cancel/refund
+  path — fine for a simple kitchen, would need extending for anything
+  more complex.
 - **No automated tests yet.**

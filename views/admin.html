@@ -25,6 +25,10 @@
   .map-link{ color:#e0401f; font-size:13px; }
   .refresh{ background:#e0401f; color:#fff; border:none; padding:10px 18px; border-radius:30px; cursor:pointer; font-weight:600; }
   .refresh:hover{ background:#fff; color:#000; }
+  .status-buttons{ display:flex; flex-direction:column; gap:6px; min-width:130px; }
+  .status-btn{ background:#241f1c; border:1px solid #332c26; color:#a89e93; padding:6px 12px; border-radius:20px; font-size:12px; cursor:pointer; text-align:left; transition:.2s; }
+  .status-btn:hover{ border-color:#e0401f; color:#fff; }
+  .status-btn.active{ background:#e0401f; border-color:#e0401f; color:#fff; font-weight:600; }
 </style>
 </head>
 <body>
@@ -42,8 +46,30 @@
 <div id="messages"></div>
 
 <script>
+const STATUSES = [
+  { value: 'new', label: 'Received' },
+  { value: 'preparing', label: 'Preparing' },
+  { value: 'sent', label: 'Sent' },
+  { value: 'delivered', label: 'Delivered' }
+];
+
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function setOrderStatus(id, status) {
+  try {
+    const res = await fetch(`/api/orders/${id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    if (!res.ok) throw new Error(`server responded ${res.status}`);
+    loadAll();
+  } catch (err) {
+    console.error('Could not update order status', err);
+    alert('Could not update order status.');
+  }
 }
 
 function renderOrders(orders, highlightId) {
@@ -60,6 +86,10 @@ function renderOrders(orders, highlightId) {
       ? `<a class="map-link" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${order.location.lat}&mlon=${order.location.lon}#map=17/${order.location.lat}/${order.location.lon}">View on map</a>`
       : '<span style="color:#5a5550">Not located</span>';
 
+    const statusButtons = STATUSES.map(s => `
+      <button type="button" class="status-btn ${order.status === s.value ? 'active' : ''}" data-order-id="${escapeHtml(order.id)}" data-status="${s.value}">${s.label}</button>
+    `).join('');
+
     return `
     <tr class="${order.id === highlightId ? 'new-row' : ''}">
       <td>${escapeHtml(order.id)}</td>
@@ -68,13 +98,14 @@ function renderOrders(orders, highlightId) {
       <td>${escapeHtml(order.customer.address)}${order.customer.notes ? '<br><small>' + escapeHtml(order.customer.notes) + '</small>' : ''}<br>${mapLink}</td>
       <td>${order.items.map(i => `${i.quantity}× ${escapeHtml(i.name)}`).join('<br>')}</td>
       <td class="total">${order.total.toFixed(2)} CHF</td>
+      <td><div class="status-buttons">${statusButtons}</div></td>
     </tr>
   `;
   }).join('');
 
   container.innerHTML = `
     <table>
-      <thead><tr><th>ID</th><th>Date</th><th>Customer</th><th>Address</th><th>Items</th><th>Total</th></tr></thead>
+      <thead><tr><th>ID</th><th>Date</th><th>Customer</th><th>Address</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   `;
@@ -154,7 +185,15 @@ function connectLiveFeed() {
     loadAll(order.id);
     setTimeout(() => { document.title = 'Bison Burger | Admin'; }, 5000);
   });
+
+  source.addEventListener('order-status', () => loadAll());
 }
+
+document.getElementById('orders').addEventListener('click', event => {
+  const button = event.target.closest('.status-btn');
+  if (!button) return;
+  setOrderStatus(button.dataset.orderId, button.dataset.status);
+});
 
 document.getElementById('refresh').addEventListener('click', () => loadAll());
 loadAll();
