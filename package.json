@@ -1,0 +1,14 @@
+{
+  "name": "bisonburger",
+  "version": "1.0.0",
+  "description": "Bison Burger restaurant website with a small Express backend for the menu and order flow.",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
